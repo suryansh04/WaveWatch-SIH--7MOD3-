@@ -1,0 +1,379 @@
+/* Import Montserrat Font */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+
+/* ===== HEADER MAIN STYLES ===== */
+.header {
+  position: fixed;
+  top: 0;
+  left: 280px; /* Adjust for sidebar width */
+  right: 0;
+  height: 80px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  z-index: 900;
+  font-family: "Montserrat", sans-serif;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 30px;
+}
+
+/* ===== WELCOME SECTION ===== */
+.header-welcome {
+  flex: 1;
+}
+
+.welcome-text {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+}
+
+.welcome-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 2px 0 0 0;
+  font-weight: 400;
+}
+
+/* ===== HEADER ACTIONS ===== */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ===== NOTIFICATION BUTTON ===== */
+.notification-btn {
+  position: relative;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.notification-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+  transform: translateY(-1px);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* ===== USER PROFILE STYLES ===== */
+.user-profile-container {
+  position: relative;
+}
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-profile-btn:hover {
+  border-color: #1e88e5;
+  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.1);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.2;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.dropdown-arrow {
+  color: #9ca3af;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow-open {
+  transform: rotate(180deg);
+}
+
+/* ===== DROPDOWN MENU ===== */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 998;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== DROPDOWN HEADER ===== */
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f9fafb;
+}
+
+.dropdown-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #e5e7eb;
+}
+
+.dropdown-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dropdown-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.3;
+}
+
+.dropdown-email {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+/* ===== DROPDOWN DIVIDER ===== */
+.dropdown-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 0;
+}
+
+/* ===== DROPDOWN ITEMS ===== */
+.dropdown-items {
+  padding: 8px 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #374151;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.logout-item {
+  color: #ef4444;
+}
+
+.logout-item:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* ===== TABLET RESPONSIVE (1024px and below) ===== */
+@media (max-width: 1024px) {
+  .header {
+    left: 260px; /* Adjust for smaller sidebar */
+  }
+
+  .header-content {
+    padding: 0 24px;
+  }
+
+  .welcome-text {
+    font-size: 22px;
+  }
+
+  .header-actions {
+    gap: 16px;
+  }
+}
+
+/* ===== MOBILE RESPONSIVE (768px and below) ===== */
+@media (max-width: 768px) {
+  .header {
+    left: 0; /* No sidebar offset on mobile */
+    top: 0;
+    height: 70px;
+  }
+
+  .header-content {
+    padding: 0 80px 0 20px; /* Space for mobile menu button */
+  }
+
+  .welcome-text {
+    font-size: 20px;
+  }
+
+  .welcome-subtitle {
+    font-size: 13px;
+  }
+
+  .header-actions {
+    gap: 12px;
+  }
+
+  .user-info {
+    display: none; /* Hide user info text on mobile */
+  }
+
+  .user-profile-btn {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .dropdown-menu {
+    width: 260px;
+  }
+}
+
+/* ===== SMALL MOBILE RESPONSIVE (480px and below) ===== */
+@media (max-width: 480px) {
+  .header {
+    height: 65px;
+  }
+
+  .header-content {
+    padding: 0 70px 0 15px;
+  }
+
+  .welcome-text {
+    font-size: 18px;
+  }
+
+  .welcome-subtitle {
+    font-size: 12px;
+  }
+
+  .header-actions {
+    gap: 10px;
+  }
+
+  .notification-btn {
+    padding: 10px;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dropdown-menu {
+    width: 240px;
+    right: -10px; /* Adjust position for small screens */
+  }
+}
+
+/* ===== VERY SMALL MOBILE RESPONSIVE (360px and below) ===== */
+@media (max-width: 360px) {
+  .header-content {
+    padding: 0 65px 0 12px;
+  }
+
+  .welcome-text {
+    font-size: 16px;
+  }
+
+  .welcome-subtitle {
+    display: none; /* Hide subtitle on very small screens */
+  }
+
+  .dropdown-menu {
+    width: 220px;
+    right: -15px;
+  }
+}
