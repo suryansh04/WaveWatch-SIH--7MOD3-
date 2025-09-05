@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
-.active-alerts-container {
+.activeAlert-container {
   display: flex;
   flex-direction: column;
   font-family: "Montserrat", sans-serif;
@@ -9,10 +9,9 @@
   padding: 24px;
   margin-bottom: 24px;
   height: 350px;
-  /* min-height: 300px; */
 }
 
-.alerts-title {
+.activeAlert-title {
   font-size: 20px;
   font-weight: 600;
   color: #333;
@@ -20,40 +19,37 @@
   text-align: center;
 }
 
-/* Scrollable container for alerts */
-.alerts-scroll-container {
+.activeAlert-scrollContainer {
   flex: 1;
   overflow-y: auto;
   padding-right: 8px;
   margin-right: -8px;
 }
 
-/* Custom scrollbar styling */
-.alerts-scroll-container::-webkit-scrollbar {
+.activeAlert-scrollContainer::-webkit-scrollbar {
   width: 6px;
 }
 
-.alerts-scroll-container::-webkit-scrollbar-track {
+.activeAlert-scrollContainer::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
 
-.alerts-scroll-container::-webkit-scrollbar-thumb {
+.activeAlert-scrollContainer::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 10px;
 }
 
-.alerts-scroll-container::-webkit-scrollbar-thumb:hover {
+.activeAlert-scrollContainer::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
 
-/* Firefox scrollbar */
-.alerts-scroll-container {
+.activeAlert-scrollContainer {
   scrollbar-width: thin;
   scrollbar-color: #c1c1c1 #f1f1f1;
 }
 
-.alert-card {
+.activeAlert-card {
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid #e5e5e5;
@@ -61,46 +57,46 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.alert-card:hover {
+.activeAlert-card:hover {
   transform: translateY(-1.5px);
 }
 
-.alert-card:last-child {
+.activeAlert-card:last-child {
   margin-bottom: 0;
 }
 
-.alert-header {
+.activeAlert-header {
   padding: 8px 16px;
   text-align: center;
 }
 
-.red-alert-badge {
+.activeAlert-badge {
   color: white;
   font-weight: 500;
   font-size: 14px;
 }
 
-.alert-content {
+.activeAlert-content {
   padding: 16px;
 }
 
-.alert-icon-title {
+.activeAlert-iconTitle {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
 }
 
-.warning-icon {
+.activeAlert-warningIcon {
   flex-shrink: 0;
 }
 
-.alert-type {
+.activeAlert-type {
   font-weight: 500;
   font-size: 14px;
 }
 
-.alert-time {
+.activeAlert-time {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -109,7 +105,7 @@
   font-size: 14px;
 }
 
-.alert-title {
+.activeAlert-alertTitle {
   font-size: 18px;
   font-weight: 600;
   color: #333;
@@ -117,7 +113,7 @@
   line-height: 1.3;
 }
 
-.alert-location {
+.activeAlert-location {
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -126,45 +122,45 @@
   line-height: 1.4;
 }
 
-.alert-location svg {
+.activeAlert-location svg {
   margin-top: 2px;
   flex-shrink: 0;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .active-alerts-container {
+  .activeAlert-container {
     padding: 16px;
     max-height: 400px;
   }
 
-  .alerts-title {
+  .activeAlert-title {
     font-size: 18px;
     margin-bottom: 16px;
   }
 
-  .alert-card {
+  .activeAlert-card {
     margin-bottom: 12px;
   }
 
-  .alert-content {
+  .activeAlert-content {
     padding: 12px;
   }
 
-  .alert-title {
+  .activeAlert-alertTitle {
     font-size: 16px;
   }
 
-  .alert-location {
+  .activeAlert-location {
     font-size: 13px;
   }
 
-  .alert-icon-title {
+  .activeAlert-iconTitle {
     flex-wrap: wrap;
     gap: 6px;
   }
 
-  .alert-time {
+  .activeAlert-time {
     margin-left: 0;
     width: 100%;
     margin-top: 4px;
@@ -172,28 +168,28 @@
 }
 
 @media (max-width: 480px) {
-  .active-alerts-container {
+  .activeAlert-container {
     padding: 12px;
     max-height: 350px;
   }
 
-  .alerts-title {
+  .activeAlert-title {
     font-size: 16px;
   }
 
-  .alert-title {
+  .activeAlert-alertTitle {
     font-size: 15px;
   }
 
-  .alert-location {
+  .activeAlert-location {
     font-size: 12px;
   }
 
-  .alert-content {
+  .activeAlert-content {
     padding: 10px;
   }
 
-  .red-alert-badge {
+  .activeAlert-badge {
     font-size: 13px;
   }
 }

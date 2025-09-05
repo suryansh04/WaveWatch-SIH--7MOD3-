@@ -3,7 +3,6 @@ import { AlertTriangle, Clock, MapPin } from "lucide-react";
 import "./ActiveAlerts.css";
 
 const ActiveAlerts = () => {
-  // Sample data for multiple alerts
   const alertsData = [
     {
       id: 1,
@@ -77,47 +76,47 @@ const ActiveAlerts = () => {
   };
 
   return (
-    <div className="active-alerts-container">
-      <h2 className="alerts-title">Active Alerts</h2>
+    <div className="activeAlert-container">
+      <h2 className="activeAlert-title">Active Alerts</h2>
 
-      <div className="alerts-scroll-container">
+      <div className="activeAlert-scrollContainer">
         {alertsData.map((alert) => {
           const styles = getAlertStyles(alert.type);
 
           return (
-            <div key={alert.id} className="alert-card">
+            <div key={alert.id} className="activeAlert-card">
               <div
-                className="alert-header"
+                className="activeAlert-header"
                 style={{ background: styles.headerBg }}
               >
-                <span className="red-alert-badge">{alert.type}</span>
+                <span className="activeAlert-badge">{alert.type}</span>
               </div>
 
               <div
-                className="alert-content"
+                className="activeAlert-content"
                 style={{ background: styles.contentBg }}
               >
-                <div className="alert-icon-title">
+                <div className="activeAlert-iconTitle">
                   <AlertTriangle
-                    className="warning-icon"
+                    className="activeAlert-warningIcon"
                     size={20}
                     style={{ color: styles.iconColor }}
                   />
                   <span
-                    className="alert-type"
+                    className="activeAlert-type"
                     style={{ color: styles.iconColor }}
                   >
                     {alert.severity}
                   </span>
-                  <div className="alert-time">
+                  <div className="activeAlert-time">
                     <Clock size={16} />
                     <span>{alert.date}</span>
                   </div>
                 </div>
 
-                <h3 className="alert-title">{alert.title}</h3>
+                <h3 className="activeAlert-alertTitle">{alert.title}</h3>
 
-                <div className="alert-location">
+                <div className="activeAlert-location">
                   <MapPin size={16} />
                   <span>{alert.location}</span>
                 </div>

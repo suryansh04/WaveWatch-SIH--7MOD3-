@@ -23,14 +23,18 @@
 
 .logo {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: lighter;
   margin: 0;
+  text-align: center;
   color: white;
   font-family: "Montserrat", sans-serif;
 }
-
+.logo-link {
+  text-decoration: none;
+}
 .tagline {
   font-size: 14px;
+  text-align: center;
   margin: 5px 0 0 0;
   opacity: 0.9;
   color: rgba(255, 255, 255, 0.8);
