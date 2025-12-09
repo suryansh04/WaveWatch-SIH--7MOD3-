@@ -234,7 +234,7 @@ const SignupForm = () => {
         </div>
 
         <div className="signup-header">
-          <h2 className="signup-title">Admin Panel Signup</h2>
+          <h2 className="signup-title">Analyst Panel Signup</h2>
           <p className="signup-subtitle">
             Analysts: Sign up for access (requires Admin approval)
           </p>

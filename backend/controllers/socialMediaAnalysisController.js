@@ -1,8 +1,8 @@
 const SocialMedia = require("../models/socialMediaSchema"); // or use global.db approach
-
+const axios = require("axios");
 exports.getSocialMediaPosts = async (req, res) => {
   try {
-    const { flood_filter, search, page = 1, limit = 10 } = req.query;
+    const { flood_filter, search, page = 1, limit = 0 } = req.query;
 
     let query = {};
 
@@ -54,5 +54,25 @@ exports.getSocialMediaStats = async (req, res) => {
     res.json({ total, flood, nonFlood });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch stats" });
+  }
+};
+exports.reverseGeocode = async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+
+    if (!lat || !lon) {
+      return res.status(400).json({ error: "lat and lon are required" });
+    }
+
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
+
+    const response = await axios.get(url);
+
+    res.json(response.data);
+  } catch (err) {
+    console.error("Reverse geocoding error:", err);
+    res.status(500).json({ error: "Failed to get location" });
   }
 };

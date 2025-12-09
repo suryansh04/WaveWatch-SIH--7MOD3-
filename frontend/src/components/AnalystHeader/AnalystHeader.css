@@ -1,0 +1,266 @@
+/* Analyst Header Container */
+.analyst-header {
+  position: fixed;
+  top: 0;
+  left: 280px;
+  right: 0;
+  height: 80px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  font-family: "Montserrat", sans-serif;
+}
+
+.analyst-header-content {
+  height: 100%;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Welcome Section */
+.analyst-header-welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.analyst-header-welcome-text {
+  font-size: 24px;
+  font-weight: 600;
+  color: #212121;
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+}
+
+.analyst-header-welcome-subtitle {
+  font-size: 14px;
+  color: #757575;
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Header Actions */
+.analyst-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* User Profile Container */
+.analyst-header-user-profile-container {
+  position: relative;
+}
+
+.analyst-header-user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.analyst-header-user-profile-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.analyst-header-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.analyst-header-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.analyst-header-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.analyst-header-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #212121;
+  font-family: "Montserrat", sans-serif;
+}
+
+.analyst-header-user-role {
+  font-size: 12px;
+  color: #757575;
+  font-family: "Montserrat", sans-serif;
+}
+
+.analyst-header-dropdown-arrow {
+  color: #757575;
+  transition: transform 0.3s ease;
+}
+
+.analyst-header-dropdown-arrow-open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Overlay */
+.analyst-header-dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 998;
+}
+
+/* Dropdown Menu */
+.analyst-header-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  overflow: hidden;
+}
+
+.analyst-header-dropdown-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f5f5f5;
+}
+
+.analyst-header-dropdown-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.analyst-header-dropdown-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.analyst-header-dropdown-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.analyst-header-dropdown-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #212121;
+  font-family: "Montserrat", sans-serif;
+}
+
+.analyst-header-dropdown-role {
+  font-size: 12px;
+  color: #757575;
+  font-family: "Montserrat", sans-serif;
+}
+
+.analyst-header-dropdown-divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 0;
+}
+
+.analyst-header-dropdown-items {
+  padding: 8px;
+}
+
+.analyst-header-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: #424242;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.analyst-header-dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.analyst-header-logout-item {
+  color: #d32f2f;
+}
+
+.analyst-header-logout-item:hover {
+  background-color: #ffebee;
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+  .analyst-header-welcome-text {
+    font-size: 22px;
+  }
+
+  .analyst-header-welcome-subtitle {
+    font-size: 13px;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .analyst-header {
+    left: 0;
+    height: 70px;
+  }
+
+  .analyst-header-content {
+    padding: 0 60px 0 20px;
+  }
+
+  .analyst-header-welcome {
+    display: none;
+  }
+
+  .analyst-header-user-info {
+    display: none;
+  }
+
+  .analyst-header-user-profile-btn {
+    padding: 8px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .analyst-header-content {
+    padding: 0 50px 0 16px;
+  }
+
+  .analyst-header-user-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .analyst-header-dropdown-menu {
+    width: 220px;
+  }
+}

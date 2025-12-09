@@ -50,27 +50,61 @@ exports.getCallReportById = async (req, res) => {
   }
 };
 
+// exports.vapiWebhook = async (req, res) => {
+//   try {
+//     const event = req.body;
+//     // console.log(event);
+//     console.log(event.message.analysis);
+//     const reporterName =
+//       event.message.analysis.structuredData?.name || "Unknown";
+//     const hazardType =
+//       event.message.analysis.structuredData?.hazardType || "General";
+//     const location =
+//       event.message.analysis.structuredData?.location || "Unknown";
+//     const description =
+//       event.message.analysis.structuredData?.description ||
+//       "No description provided";
+//     const newReport = await CallReport.create({
+//       reporterName: reporterName || "Unknown",
+//       hazardType,
+//       location,
+//       description,
+//       source: "phone-call",
+//     });
+
+//     // console.log("✅ Call Report saved:", newReport._id);
+//     return res.status(201).json({ success: true });
+//   } catch (err) {
+//     console.error("❌ Webhook Error:", err);
+//     return res.status(500).json({ success: false, error: err.message });
+//   }
+// };
+
 exports.vapiWebhook = async (req, res) => {
   try {
-    const event = req.body;
-    // console.log(event);
-    console.log(event.message.analysis);
-    const reporterName =
-      event.message.analysis.structuredData?.name || "Unknown";
-    const hazardType =
-      event.message.analysis.structuredData?.hazardType || "General";
-    const location =
-      event.message.analysis.structuredData?.location || "Unknown";
-    const description =
-      event.message.analysis.structuredData?.description ||
-      "No description provided";
-    const newReport = await CallReport.create({
-      reporterName: reporterName || "Unknown",
-      hazardType,
-      location,
-      description,
-      source: "phone-call",
-    });
+    const { type, message, call, timestamp } = req.body;
+    console.log(type);
+    console.log(message);
+    console.log(`Webhook received: ${type} at ${timestamp}`);
+
+    // const event = req.body;
+    // console.log(res.message);
+    // console.log(event.message.transcript.text);
+    // const reporterName = event.artifact.structuredOutputs?.name || "Unknown";
+    // const hazardType =
+    //   event.message.analysis.structuredData?.hazardType || "General";
+    // const location =
+    //   event.message.analysis.structuredData?.location || "Unknown";
+    // const description =
+    //   event.message.analysis.structuredData?.description ||
+    //   "No description provided";
+    // const newReport = await CallReport.create({
+    //   reporterName: reporterName || "Unknown",
+    //   hazardType,
+    //   location,
+    //   description,
+    //   source: "phone-call",
+    // });
 
     // console.log("✅ Call Report saved:", newReport._id);
     return res.status(201).json({ success: true });

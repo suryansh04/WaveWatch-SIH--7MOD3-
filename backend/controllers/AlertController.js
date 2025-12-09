@@ -43,6 +43,33 @@ exports.getAlert = async (req, res) => {
 };
 
 //Create Alert
+// exports.createAlert = async (req, res) => {
+//   try {
+//     const { type, title, location, description } = req.body;
+
+//     const alert = new Alert({
+//       type,
+//       title,
+//       location,
+//       description,
+//     });
+
+//     const savedAlert = await alert.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Alert created successfully",
+//       data: savedAlert,
+//     });
+//   } catch (error) {
+//     res.status(400).json({
+//       success: false,
+//       message: "Error creating alert",
+//       error: error.message,
+//     });
+//   }
+// };
+//Create Alert
 exports.createAlert = async (req, res) => {
   try {
     const { type, title, location, description } = req.body;
@@ -56,9 +83,21 @@ exports.createAlert = async (req, res) => {
 
     const savedAlert = await alert.save();
 
+    // 🔥 NEW — forward alert to APP BACKEND for push broadcast
+    await fetch("https://wavewatch-backend.onrender.com/api/alerts/broadcast", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type,
+        title,
+        location,
+        description,
+      }),
+    });
+
     res.status(201).json({
       success: true,
-      message: "Alert created successfully",
+      message: "Alert created & broadcasted successfully",
       data: savedAlert,
     });
   } catch (error) {

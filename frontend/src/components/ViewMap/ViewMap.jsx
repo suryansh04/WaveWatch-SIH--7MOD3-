@@ -14,11 +14,16 @@ import {
   AlertTriangle,
   CheckCircle,
   User,
+  MapIcon,
+  Layers,
+  Clock,
+  Search,
+  SlidersHorizontal,
 } from "lucide-react";
 import { DBSCAN } from "density-clustering";
 import "./ViewMap.css";
 
-// ADDED import for the social-media image marker
+// Import for the social-media image marker
 import redditMarker from "/src/assets/marker.png";
 
 // Fix for default markers in Leaflet
@@ -36,7 +41,7 @@ const ViewMap = () => {
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
   const markersRef = useRef([]);
-  const hotspotsRef = useRef([]); // holds Leaflet layer objects (circles)
+  const hotspotsRef = useRef([]);
   const socialMediaMarkersRef = useRef([]);
 
   const [reports, setReports] = useState([]);
@@ -48,14 +53,82 @@ const ViewMap = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [showHotspots, setShowHotspots] = useState(true);
 
-  // NEW: hotspot items for the right-side list
+  // Hotspot items for the right-side list
   const [hotspotItems, setHotspotItems] = useState([]);
+
+  // Temporary filter state (user edits here before applying)
+  const [tempFilters, setTempFilters] = useState({
+    state: "",
+    district: "",
+    quickTime: "",
+    startDate: "",
+    endDate: "",
+    reportTypes: [],
+    socialMediaTypes: [],
+    urgencyLevels: [],
+    verificationStatus: [],
+  });
+
+  // Applied filters (triggers API call)
+  const [advancedFilters, setAdvancedFilters] = useState({
+    state: "",
+    district: "",
+    quickTime: "",
+    startDate: "",
+    endDate: "",
+    reportTypes: [],
+    socialMediaTypes: [],
+    urgencyLevels: [],
+    verificationStatus: [],
+  });
+
+  const [activeFiltersCount, setActiveFiltersCount] = useState(0);
+
+  // Indian states for dropdown
+  const indianStates = [
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chhattisgarh",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+    "Andaman and Nicobar Islands",
+    "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi",
+    "Jammu and Kashmir",
+    "Ladakh",
+    "Lakshadweep",
+    "Puducherry",
+  ];
 
   // Modal state
   const [selectedReport, setSelectedReport] = useState(null);
   const [selectedSocialPost, setSelectedSocialPost] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState("report"); // "report" or "social"
+  const [modalType, setModalType] = useState("report");
 
   const urgencyColors = {
     High: "#dc2626",
@@ -125,9 +198,80 @@ const ViewMap = () => {
   const fetchReports = async () => {
     try {
       setLoading(true);
+
+      // Build query parameters from advanced filters
+      const params = new URLSearchParams();
+
+      // Time filters - handle quick time
+      let startDate = advancedFilters.startDate;
+      let endDate = advancedFilters.endDate;
+
+      if (advancedFilters.quickTime) {
+        const now = new Date();
+        switch (advancedFilters.quickTime) {
+          case "1h":
+            startDate = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+            break;
+          case "24h":
+            startDate = new Date(
+              now.getTime() - 24 * 60 * 60 * 1000
+            ).toISOString();
+            break;
+          case "7d":
+            startDate = new Date(
+              now.getTime() - 7 * 24 * 60 * 60 * 1000
+            ).toISOString();
+            break;
+          case "30d":
+            startDate = new Date(
+              now.getTime() - 30 * 24 * 60 * 60 * 1000
+            ).toISOString();
+            break;
+        }
+        endDate = now.toISOString();
+      }
+
+      if (startDate) {
+        params.append("startDate", startDate);
+      }
+      if (endDate) {
+        params.append("endDate", endDate);
+      }
+
+      // Location filters
+      if (advancedFilters.state) {
+        params.append("state", advancedFilters.state);
+      }
+      if (advancedFilters.district) {
+        params.append("district", advancedFilters.district);
+      }
+
+      // Report type filters
+      if (advancedFilters.reportTypes.length > 0) {
+        params.append("type", advancedFilters.reportTypes.join(","));
+      }
+
+      // Urgency filters
+      if (advancedFilters.urgencyLevels.length > 0) {
+        params.append("urgency", advancedFilters.urgencyLevels.join(","));
+      }
+
+      // Verification status filters
+      if (advancedFilters.verificationStatus.length > 0) {
+        params.append(
+          "verificationStatus",
+          advancedFilters.verificationStatus.join(",")
+        );
+      }
+
+      const queryString = params.toString();
+      const reportsUrl = `http://localhost:3000/reports${
+        queryString ? `?${queryString}` : ""
+      }`;
+
       const [reportsResponse, socialMediaResponse] = await Promise.all([
-        axios.get("http://localhost:3000/reports"),
-        axios.get("http://localhost:3000/social-media/posts"), // Add this endpoint to your backend
+        axios.get(reportsUrl),
+        axios.get("http://localhost:3000/social-media/posts"),
       ]);
 
       setReports(reportsResponse.data.reports || []);
@@ -143,7 +287,7 @@ const ViewMap = () => {
 
   // Calculate distance between two lat/lng points (in kilometers)
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Earth's radius in kilometers
+    const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
@@ -170,7 +314,7 @@ const ViewMap = () => {
     };
 
     const dbscan = new DBSCAN();
-    const clusters = dbscan.run(points, 5, 3, distanceFunction); // 5km radius, min 3 points
+    const clusters = dbscan.run(points, 5, 3, distanceFunction);
 
     const hotspots = clusters.map((cluster, index) => {
       const clusterReports = cluster.map(
@@ -208,7 +352,7 @@ const ViewMap = () => {
 
   // Generate hotspots using DBSCAN for social media posts
   const generateSocialMediaHotspots = (filteredSocialPosts) => {
-    if (filteredSocialPosts.length < 2) return []; // Lower threshold for social media
+    if (filteredSocialPosts.length < 2) return [];
 
     const points = filteredSocialPosts.map((post) => [post.lat, post.lon]);
 
@@ -217,7 +361,7 @@ const ViewMap = () => {
     };
 
     const dbscan = new DBSCAN();
-    const clusters = dbscan.run(points, 8, 2, distanceFunction); // 8km radius (increased range), min 2 points
+    const clusters = dbscan.run(points, 8, 2, distanceFunction);
 
     const hotspots = clusters.map((cluster, index) => {
       const clusterPosts = cluster.map(
@@ -231,8 +375,7 @@ const ViewMap = () => {
         cluster.reduce((sum, pointIndex) => sum + points[pointIndex][1], 0) /
         cluster.length;
 
-      // Use same intensity calculation as reports - all posts treated as "Medium" urgency
-      const intensity = clusterPosts.length * 2; // Each post = 2 points (Medium urgency equivalent)
+      const intensity = clusterPosts.length * 2;
 
       return {
         id: `social-hotspot-${index}`,
@@ -267,16 +410,15 @@ const ViewMap = () => {
       radius: style.radius,
     });
 
-    // attach custom id so we can find the layer later
     circle._customId = hotspot.id;
 
     let popupContent;
 
     if (hotspot.type === "social") {
       popupContent = `
-        <div class="hotspot-popup">
-          <h3>📱 Social Media Hotspot</h3>
-          <div class="hotspot-stats">
+        <div class="view-map-hotspot-popup">
+          <h3>Social Media Hotspot</h3>
+          <div class="view-map-hotspot-stats">
             <p><strong>Posts:</strong> ${hotspot.postCount}</p>
             <p><strong>Activity Level:</strong> ${
               hotspot.intensity >= 8
@@ -286,7 +428,7 @@ const ViewMap = () => {
                 : "Low"
             }</p>
           </div>
-          <div class="hotspot-report-types">
+          <div class="view-map-hotspot-report-types">
             <strong>Sources:</strong><br>
             ${[
               ...new Set(
@@ -298,9 +440,9 @@ const ViewMap = () => {
       `;
     } else {
       popupContent = `
-        <div class="hotspot-popup">
-          <h3>🔥 Threat Hotspot</h3>
-          <div class="hotspot-stats">
+        <div class="view-map-hotspot-popup">
+          <h3>Threat Hotspot</h3>
+          <div class="view-map-hotspot-stats">
             <p><strong>Reports:</strong> ${hotspot.reportCount}</p>
             <p><strong>Verified:</strong> ${hotspot.verifiedCount}</p>
             <p><strong>Threat Level:</strong> ${
@@ -311,7 +453,7 @@ const ViewMap = () => {
                 : "Low"
             }</p>
           </div>
-          <div class="hotspot-report-types">
+          <div class="view-map-hotspot-report-types">
             <strong>Report Types:</strong><br>
             ${[...new Set(hotspot.reports.map((r) => r.type))].join(", ")}
           </div>
@@ -329,13 +471,13 @@ const ViewMap = () => {
 
     return L.divIcon({
       html: `
-      <div class="pin-marker" style="color: ${color}">
+      <div class="view-map-pin-marker" style="color: ${color}">
         <svg width="24" height="32" viewBox="0 0 24 32" fill="currentColor">
           <path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 20 12 20s12-11 12-20c0-6.627-5.373-12-12-12zm0 16c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"/>
         </svg>
       </div>
     `,
-      className: "custom-pin-icon",
+      className: "view-map-custom-pin-icon",
       iconSize: [24, 32],
       iconAnchor: [12, 32],
     });
@@ -343,13 +485,12 @@ const ViewMap = () => {
 
   // Create custom marker icon for social media posts
   const createSocialMediaIcon = () => {
-    // Using the provided image as the icon
     return L.icon({
       iconUrl: redditMarker,
       iconRetinaUrl: redditMarker,
-      iconSize: [40, 40], // adjust size if you want it bigger/smaller
-      iconAnchor: [20, 20], // center the icon over the point
-      className: "social-media-pin-icon",
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],
+      className: "view-map-social-media-pin-icon",
     });
   };
 
@@ -357,9 +498,7 @@ const ViewMap = () => {
   const getFilteredReports = () => {
     let filtered = reports.filter((report) => {
       const isCrowdReport = !report.socialMedia;
-
       if (!crowdReports && isCrowdReport) return false;
-
       return true;
     });
 
@@ -408,7 +547,7 @@ const ViewMap = () => {
       );
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
+        attribution: "ﾂｩ OpenStreetMap contributors",
       }).addTo(leafletMapRef.current);
     }
 
@@ -420,9 +559,54 @@ const ViewMap = () => {
         leafletMapRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [advancedFilters]);
+  // Initialize Leaflet map for detail modal
+  useEffect(() => {
+    if (showModal && modalType === "report" && selectedReport) {
+      setTimeout(() => {
+        const mapContainer = document.getElementById("detail-report-map");
+        if (mapContainer && window.L) {
+          // Clear existing map
+          mapContainer.innerHTML = "";
 
+          const lat = selectedReport.location.coordinates[1];
+          const lng = selectedReport.location.coordinates[0];
+
+          const detailMap = window.L.map("detail-report-map").setView(
+            [lat, lng],
+            13
+          );
+
+          window.L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+              attribution: "© OpenStreetMap contributors",
+            }
+          ).addTo(detailMap);
+
+          // Custom marker icon
+          const customIcon = window.L.divIcon({
+            className: "view-map-custom-pin-icon",
+            html: `<div style="background-color: #ef4444; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [30, 30],
+            iconAnchor: [15, 15],
+          });
+
+          window.L.marker([lat, lng], { icon: customIcon })
+            .addTo(detailMap)
+            .bindPopup(
+              `<b>${selectedReport.type}</b><br>${
+                selectedReport.description?.substring(0, 50) || ""
+              }...`
+            )
+            .openPopup();
+
+          // Invalidate size to ensure it renders correctly
+          detailMap.invalidateSize();
+        }
+      }, 300);
+    }
+  }, [showModal, modalType, selectedReport]);
   // Update markers and hotspots on map
   useEffect(() => {
     if (!leafletMapRef.current) return;
@@ -441,24 +625,20 @@ const ViewMap = () => {
     markersRef.current = [];
     hotspotsRef.current = [];
     socialMediaMarkersRef.current = [];
-    setHotspotItems([]); // reset list while we rebuild
+    setHotspotItems([]);
 
     const filteredReports = getFilteredReports();
     const filteredSocialPosts = getFilteredSocialMediaPosts();
 
-    // Generate and display hotspots
     const hotspotListToShow = [];
 
     if (showHotspots) {
-      // Generate report hotspots
       const reportHotspots = generateReportHotspots(filteredReports);
       reportHotspots.forEach((hotspot) => {
         const hotspotLayer = createHotspotLayer(hotspot);
-        // add to map and keep reference
         hotspotLayer.addTo(leafletMapRef.current);
         hotspotsRef.current.push(hotspotLayer);
 
-        // Push a lightweight item for the right-side list
         hotspotListToShow.push({
           id: hotspot.id,
           type: hotspot.type,
@@ -468,7 +648,6 @@ const ViewMap = () => {
         });
       });
 
-      // Generate social media hotspots
       const socialHotspots = generateSocialMediaHotspots(filteredSocialPosts);
       socialHotspots.forEach((hotspot) => {
         const hotspotLayer = createHotspotLayer(hotspot);
@@ -494,9 +673,9 @@ const ViewMap = () => {
         });
 
         const popupContent = `
-          <div class="marker-popup">
+          <div class="view-map-marker-popup">
             <h3>${report.type}</h3>
-            <p><strong>Urgency:</strong> <span class="urgency-${report.urgency.toLowerCase()}">${
+            <p><strong>Urgency:</strong> <span class="view-map-urgency-${report.urgency.toLowerCase()}">${
           report.urgency
         }</span></p>
             <p><strong>Description:</strong> ${
@@ -508,8 +687,8 @@ const ViewMap = () => {
             <p><strong>Verified:</strong> ${
               report.isVerified ? "Yes" : "No"
             }</p>
-            ${report.isSOS ? '<p class="sos-badge">SOS</p>' : ""}
-            <button class="detail-btn" onclick="window.openReportDetail('${
+            ${report.isSOS ? '<p class="view-map-sos-badge">SOS</p>' : ""}
+            <button class="view-map-detail-btn" onclick="window.openReportDetail('${
               report._id
             }')">
               See in Detail
@@ -530,8 +709,8 @@ const ViewMap = () => {
       });
 
       const popupContent = `
-        <div class="social-media-popup">
-          <h3>📱 Social Media Alert</h3>
+        <div class="view-map-social-media-popup">
+          <h3>Social Media Alert</h3>
           <p><strong>Source:</strong> ${post.subreddit || "Social Media"}</p>
           <p><strong>Content:</strong> ${
             post.text
@@ -542,7 +721,7 @@ const ViewMap = () => {
           <p><strong>Flood Indicator:</strong> ${
             post.flood_label === 1 ? "Detected" : "None"
           }</p>
-          <button class="detail-btn" onclick="window.openSocialDetail('${
+          <button class="view-map-detail-btn" onclick="window.openSocialDetail('${
             post._id
           }')">
             See in Detail
@@ -555,7 +734,6 @@ const ViewMap = () => {
       socialMediaMarkersRef.current.push(marker);
     });
 
-    // Build hotspotItems state for right-side list (same order as layers added)
     setHotspotItems(hotspotListToShow);
 
     // Add global functions to handle detail button clicks
@@ -572,7 +750,6 @@ const ViewMap = () => {
         openDetailModal(post, "social");
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     reports,
     socialMediaPosts,
@@ -582,26 +759,22 @@ const ViewMap = () => {
     showHotspots,
   ]);
 
-  // Handle clicking an item in the hotspot list: pan/zoom & open popup
+  // Handle clicking an item in the hotspot list
   const handleHotspotClick = (hotspotId) => {
     if (!leafletMapRef.current) return;
 
-    // find corresponding layer in hotspotsRef by _customId
     const layer = hotspotsRef.current.find(
       (l) => l && l._customId === hotspotId
     );
-    // find item to get center zoom target
     const item = hotspotItems.find((h) => h.id === hotspotId);
 
     if (item && leafletMapRef.current) {
-      // choose sensible zoom depending on hotspot type / intensity
       const zoomLevel =
         item.intensity >= 8 ? 14 : item.intensity >= 5 ? 13 : 12;
       leafletMapRef.current.setView(item.center, zoomLevel, { animate: true });
     }
 
     if (layer) {
-      // open the popup attached to the layer
       try {
         layer.openPopup();
       } catch (e) {
@@ -610,36 +783,106 @@ const ViewMap = () => {
     }
   };
 
+  // Handle advanced filter changes
+  const handleAdvancedFilterChange = (filterType, value) => {
+    setTempFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
+  };
+
+  // Handle checkbox filters
+  const handleCheckboxFilterChange = (filterType, value) => {
+    setTempFilters((prev) => {
+      const currentValues = prev[filterType];
+      const newValues = currentValues.includes(value)
+        ? currentValues.filter((v) => v !== value)
+        : [...currentValues, value];
+      return {
+        ...prev,
+        [filterType]: newValues,
+      };
+    });
+  };
+
+  // Handle quick time filter
+  const handleQuickTimeFilter = (timeValue) => {
+    setTempFilters((prev) => ({
+      ...prev,
+      quickTime: prev.quickTime === timeValue ? "" : timeValue,
+      startDate: "",
+      endDate: "",
+    }));
+  };
+
+  // Apply filters
+  const handleApplyFilters = () => {
+    setAdvancedFilters({ ...tempFilters });
+  };
+
+  // Clear all advanced filters
+  const handleClearFilters = () => {
+    const clearedFilters = {
+      state: "",
+      district: "",
+      quickTime: "",
+      startDate: "",
+      endDate: "",
+      reportTypes: [],
+      socialMediaTypes: [],
+      urgencyLevels: [],
+      verificationStatus: [],
+    };
+    setTempFilters(clearedFilters);
+    setAdvancedFilters(clearedFilters);
+  };
+
+  // Calculate active filters count
+  useEffect(() => {
+    let count = 0;
+    if (advancedFilters.state) count++;
+    if (advancedFilters.district) count++;
+    if (advancedFilters.quickTime) count++;
+    if (advancedFilters.startDate || advancedFilters.endDate) count++;
+    count += advancedFilters.reportTypes.length;
+    count += advancedFilters.socialMediaTypes.length;
+    count += advancedFilters.urgencyLevels.length;
+    count += advancedFilters.verificationStatus.length;
+    setActiveFiltersCount(count);
+  }, [advancedFilters]);
+
   return (
-    <div className="map-container">
-      {/* Map */}
-      <div className="map-wrapper">
+    <div className="view-map-container">
+      <div className="view-map-wrapper">
         {loading && (
-          <div className="loading-overlay">
-            <div className="loading-spinner"></div>
+          <div className="view-map-loading-overlay">
+            <div className="view-map-loading-spinner"></div>
             <p>Loading reports...</p>
           </div>
         )}
 
         {error && (
-          <div className="error-overlay">
+          <div className="view-map-error-overlay">
             <p>Error: {error}</p>
-            <button onClick={fetchReports} className="retry-btn">
+            <button onClick={fetchReports} className="view-map-retry-btn">
               Retry
             </button>
           </div>
         )}
 
-        {/* Top Right Controls Panel */}
-        <div className="controls-panel">
-          {/* Filter Dropdown */}
-          <div className="filter-section">
-            <div className="filter-dropdown">
-              <Filter className="filter-icon" />
+        {/* Controls Panel - New Modern UI */}
+        <div className="view-map-controls-panel">
+          {/* Quick Filter Card */}
+          <div className="view-map-panel-card view-map-filter-main-card">
+            <div className="view-map-card-header">
+              <Filter className="view-map-icon-sm" />
+              <span>Quick Filter</span>
+            </div>
+            <div className="view-map-filter-input-wrapper">
               <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="filter-select"
+                className="view-map-theme-select"
               >
                 {filterOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -647,178 +890,587 @@ const ViewMap = () => {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="dropdown-arrow" />
+              <ChevronDown className="view-map-select-arrow" size={16} />
             </div>
           </div>
 
-          {/* NEW: Hotspot List (below filter) */}
-          <div className="hotspots-list" aria-label="Current hotspots">
-            <div className="hotspots-list-header">
-              <strong>Current Hotspots</strong>
-              <span className="hotspots-count">{hotspotItems.length}</span>
+          {/* Advanced Filters Card */}
+          <div className="view-map-panel-card view-map-advanced-filters-card">
+            <div className="view-map-card-header">
+              <SlidersHorizontal className="view-map-icon-sm" />
+              <span>Advanced Filters</span>
+              {activeFiltersCount > 0 && (
+                <span className="view-map-badge-count">
+                  {activeFiltersCount}
+                </span>
+              )}
             </div>
 
-            {hotspotItems.length === 0 ? (
-              <div className="hotspot-empty">No hotspots detected</div>
-            ) : (
-              <div className="hotspot-items">
-                {hotspotItems.map((h) => (
-                  <button
-                    key={h.id}
-                    className={`hotspot-item ${
-                      h.type === "social" ? "social" : "report"
-                    }`}
-                    onClick={() => handleHotspotClick(h.id)}
-                    title={`Go to hotspot (${h.type})`}
-                    aria-label={`Go to hotspot ${h.id}`}
-                  >
-                    <div className="hotspot-dot" aria-hidden="true" />
-                    <div className="hotspot-meta">
-                      <div className="hotspot-title">
-                        {h.type === "social"
-                          ? "Social Hotspot"
-                          : "Threat Hotspot"}
-                      </div>
-                      <div className="hotspot-sub">
-                        {h.count} {h.type === "social" ? "posts" : "reports"} •
-                        Intensity: {h.intensity}
-                      </div>
-                    </div>
-                  </button>
-                ))}
+            <div className="view-map-filters-content">
+              {/* Location */}
+              <div className="view-map-filter-group">
+                <label className="view-map-filter-label">
+                  <LocationIcon size={14} className="view-map-label-icon" />{" "}
+                  Location
+                </label>
+                <div className="view-map-inputs-row">
+                  <div className="view-map-select-container">
+                    <select
+                      className="view-map-theme-select view-map-sm"
+                      value={tempFilters.state}
+                      onChange={(e) =>
+                        handleAdvancedFilterChange("state", e.target.value)
+                      }
+                    >
+                      <option value="">All States</option>
+                      {indianStates.map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="view-map-select-arrow" size={14} />
+                  </div>
+                  <div className="view-map-input-container">
+                    <Search className="view-map-input-icon" size={14} />
+                    <input
+                      type="text"
+                      className="view-map-theme-input view-map-sm"
+                      placeholder="District"
+                      value={tempFilters.district}
+                      onChange={(e) =>
+                        handleAdvancedFilterChange("district", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
               </div>
-            )}
+
+              {/* Time */}
+              <div className="view-map-filter-group">
+                <label className="view-map-filter-label">
+                  <Clock size={14} className="view-map-label-icon" /> Time Range
+                </label>
+                <div className="view-map-quick-tags">
+                  {["1h", "24h", "7d", "30d"].map((t) => (
+                    <button
+                      key={t}
+                      className={`view-map-tag-btn ${
+                        tempFilters.quickTime === t ? "view-map-active" : ""
+                      }`}
+                      onClick={() => handleQuickTimeFilter(t)}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+                <div className="view-map-date-row">
+                  <input
+                    type="date"
+                    className="view-map-theme-input view-map-date-input"
+                    value={tempFilters.startDate}
+                    onChange={(e) => {
+                      handleAdvancedFilterChange("startDate", e.target.value);
+                      handleAdvancedFilterChange("quickTime", "");
+                    }}
+                  />
+                  <span className="view-map-date-separator">to</span>
+                  <input
+                    type="date"
+                    className="view-map-theme-input view-map-date-input"
+                    value={tempFilters.endDate}
+                    onChange={(e) => {
+                      handleAdvancedFilterChange("endDate", e.target.value);
+                      handleAdvancedFilterChange("quickTime", "");
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Threats */}
+              <div className="view-map-filter-group">
+                <label className="view-map-filter-label">
+                  <AlertTriangle size={14} className="view-map-label-icon" />{" "}
+                  Threats
+                </label>
+                <div className="view-map-checkbox-grid">
+                  {[
+                    "Flooding",
+                    "High waves",
+                    "Coastal damage",
+                    "Unusual tides",
+                    "Storm",
+                    "Tsunami",
+                  ].map((type) => (
+                    <label key={type} className="view-map-checkbox-pill">
+                      <input
+                        type="checkbox"
+                        checked={tempFilters.reportTypes.includes(type)}
+                        onChange={() =>
+                          handleCheckboxFilterChange("reportTypes", type)
+                        }
+                      />
+                      <span>{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Urgency & Status */}
+              <div className="view-map-split-group">
+                <div className="view-map-filter-group view-map-half">
+                  <label className="view-map-filter-label">Urgency</label>
+                  <div className="view-map-checkbox-list">
+                    {["High", "Medium", "Low"].map((urgency) => (
+                      <label key={urgency} className="view-map-checkbox-row">
+                        <input
+                          type="checkbox"
+                          checked={tempFilters.urgencyLevels.includes(urgency)}
+                          onChange={() =>
+                            handleCheckboxFilterChange("urgencyLevels", urgency)
+                          }
+                        />
+                        <span
+                          className={`view-map-urgency-dot view-map-${urgency.toLowerCase()}`}
+                        ></span>
+                        {urgency}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="view-map-filter-group view-map-half">
+                  <label className="view-map-filter-label">Status</label>
+                  <div className="view-map-checkbox-list">
+                    <label className="view-map-checkbox-row">
+                      <input
+                        type="checkbox"
+                        checked={tempFilters.verificationStatus.includes(
+                          "verified"
+                        )}
+                        onChange={() =>
+                          handleCheckboxFilterChange(
+                            "verificationStatus",
+                            "verified"
+                          )
+                        }
+                      />
+                      Verified
+                    </label>
+                    <label className="view-map-checkbox-row">
+                      <input
+                        type="checkbox"
+                        checked={tempFilters.verificationStatus.includes(
+                          "pending"
+                        )}
+                        onChange={() =>
+                          handleCheckboxFilterChange(
+                            "verificationStatus",
+                            "pending"
+                          )
+                        }
+                      />
+                      Pending
+                    </label>
+                    <label className="view-map-checkbox-row">
+                      <input
+                        type="checkbox"
+                        checked={tempFilters.verificationStatus.includes(
+                          "rejected"
+                        )}
+                        onChange={() =>
+                          handleCheckboxFilterChange(
+                            "verificationStatus",
+                            "rejected"
+                          )
+                        }
+                      />
+                      Rejected
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="view-map-card-footer">
+                <button
+                  className="view-map-btn-secondary"
+                  onClick={handleClearFilters}
+                >
+                  Clear
+                </button>
+                <button
+                  className="view-map-btn-primary"
+                  onClick={handleApplyFilters}
+                >
+                  Apply Filters
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* Toggle Controls */}
-          <div className="toggle-section">
-            <div className="toggle-item">
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={showHotspots}
-                  onChange={(e) => setShowHotspots(e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
-              <span className="toggle-label">Threat Hotspots</span>
-            </div>
-
-            <div className="toggle-item">
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={crowdReports}
-                  onChange={(e) => setCrowdReports(e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
-              <span className="toggle-label">Crowd Reports</span>
-            </div>
-
-            <div className="toggle-item">
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={socialMediaReports}
-                  onChange={(e) => setSocialMediaReports(e.target.checked)}
-                />
-                <span className="slider"></span>
-              </label>
-              <span className="toggle-label">Social Media Reports</span>
-            </div>
-          </div>
-
-          {/* Mini Legend */}
+          {/* Hotspots List */}
           <div
-            className="mini-legend"
-            role="contentinfo"
-            aria-label="Map legend"
+            className="view-map-panel-card view-map-hotspots-card"
+            aria-label="Current hotspots"
           >
-            <div className="legend-row">
-              <div className="legend-dot orange" aria-hidden="true"></div>
-              <span>Medium Urgency</span>
+            <div className="view-map-card-header view-map-border-bottom">
+              <MapIcon className="view-map-icon-sm" />
+              <span>Active Hotspots</span>
+              <span className="view-map-badge-gray">{hotspotItems.length}</span>
             </div>
-            <div className="legend-row">
-              <div className="legend-dot red" aria-hidden="true"></div>
-              <span>High Urgency </span>
+
+            <div className="view-map-hotspot-list-container">
+              {hotspotItems.length === 0 ? (
+                <div className="view-map-empty-state">No hotspots detected</div>
+              ) : (
+                <div className="view-map-hotspot-items-wrapper">
+                  {hotspotItems.map((h) => (
+                    <button
+                      key={h.id}
+                      className={`view-map-hotspot-row ${
+                        h.type === "social"
+                          ? "view-map-social-border"
+                          : "view-map-report-border"
+                      }`}
+                      onClick={() => handleHotspotClick(h.id)}
+                    >
+                      <div
+                        className={`view-map-hotspot-indicator ${
+                          h.type === "social"
+                            ? "view-map-bg-social"
+                            : "view-map-bg-report"
+                        }`}
+                      ></div>
+                      <div className="view-map-hotspot-info">
+                        <div className="view-map-hotspot-name">
+                          {h.type === "social"
+                            ? "Social Activity"
+                            : "Threat Zone"}
+                        </div>
+                        <div className="view-map-hotspot-details">
+                          {h.count} {h.type === "social" ? "posts" : "reports"}{" "}
+                          Level {h.intensity}
+                        </div>
+                      </div>
+                      <ExternalLink size={14} className="view-map-link-icon" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="legend-row">
-              <div className="legend-dot green" aria-hidden="true"></div>
-              <span>Low Urgency</span>
+          </div>
+
+          {/* Toggles */}
+          <div className="view-map-panel-card view-map-toggles-card">
+            <div className="view-map-card-header view-map-border-bottom">
+              <Layers className="view-map-icon-sm" />
+              <span>Map Layers</span>
             </div>
-            <div className="legend-row">
-              <div className="legend-dot pink" aria-hidden="true"></div>
-              <span>Danger Zones</span>
+            <div className="view-map-toggles-list">
+              <div className="view-map-toggle-row">
+                <span className="view-map-toggle-text">Threat Hotspots</span>
+                <label className="view-map-switch">
+                  <input
+                    type="checkbox"
+                    checked={showHotspots}
+                    onChange={(e) => setShowHotspots(e.target.checked)}
+                  />
+                  <span className="view-map-slider view-map-round"></span>
+                </label>
+              </div>
+              <div className="view-map-toggle-row">
+                <span className="view-map-toggle-text">Crowd Reports</span>
+                <label className="view-map-switch">
+                  <input
+                    type="checkbox"
+                    checked={crowdReports}
+                    onChange={(e) => setCrowdReports(e.target.checked)}
+                  />
+                  <span className="view-map-slider view-map-round"></span>
+                </label>
+              </div>
+              <div className="view-map-toggle-row">
+                <span className="view-map-toggle-text">Social Media</span>
+                <label className="view-map-switch">
+                  <input
+                    type="checkbox"
+                    checked={socialMediaReports}
+                    onChange={(e) => setSocialMediaReports(e.target.checked)}
+                  />
+                  <span className="view-map-slider view-map-round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div className="view-map-panel-card view-map-legend-card">
+            <div className="view-map-legend-grid">
+              <div className="view-map-legend-item">
+                <span className="view-map-dot view-map-dot-high"></span> High
+              </div>
+              <div className="view-map-legend-item">
+                <span className="view-map-dot view-map-dot-medium"></span>{" "}
+                Medium
+              </div>
+              <div className="view-map-legend-item">
+                <span className="view-map-dot view-map-dot-low"></span> Low
+              </div>
+              <div className="view-map-legend-item">
+                <span className="view-map-dot view-map-dot-danger"></span> Zones
+              </div>
             </div>
           </div>
         </div>
 
-        <div ref={mapRef} className="leaflet-map"></div>
+        <div ref={mapRef} className="view-map-leaflet-map"></div>
       </div>
 
       {/* Detailed Report Modal */}
       {showModal && modalType === "report" && selectedReport && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            {/* Modal Header */}
-            <div className="modal-header">
-              <h2 className="modal-title">Report Details</h2>
-              <button className="modal-close" onClick={closeModal}>
-                <X size={24} />
+        <div className="view-map-modal-overlay" onClick={closeModal}>
+          <div
+            className="view-map-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="view-map-modal-header">
+              <div>
+                <h2 className="view-map-modal-title">Report Details</h2>
+                <span className="view-map-modal-id">
+                  ID: {selectedReport._id}
+                </span>
+              </div>
+              <button
+                className="view-map-modal-close"
+                onClick={closeModal}
+                aria-label="Close"
+              >
+                <X size={20} />
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="modal-body">
-              {/* Report Type & Urgency */}
-              <div className="report-header">
+            <div className="view-map-modal-body">
+              <div className="view-map-modal-status-bar">
                 <div
-                  className="report-type-badge"
-                  style={{
-                    backgroundColor:
-                      reportTypeColors[selectedReport.type] || "#6b7280",
-                  }}
+                  className={`view-map-modal-status-badge ${
+                    selectedReport.isVerified ? "verified" : "pending"
+                  }`}
                 >
-                  {selectedReport.type}
+                  {selectedReport.isVerified ? (
+                    <CheckCircle size={16} />
+                  ) : (
+                    <AlertTriangle size={16} />
+                  )}
+                  {selectedReport.isVerified
+                    ? "Verified Incident"
+                    : "Pending Verification"}
                 </div>
                 <div
-                  className={`urgency-badge urgency-${selectedReport.urgency.toLowerCase()}`}
+                  className={`view-map-modal-urgency-badge view-map-urgency-${selectedReport.urgency.toLowerCase()}`}
                 >
-                  <AlertTriangle size={16} />
-                  {selectedReport.urgency} Priority
+                  {selectedReport.urgency} Urgency
                 </div>
               </div>
+
+              {/* START SPLIT LAYOUT */}
+              <div className="view-map-split-layout">
+                {/* LEFT COLUMN: Details Grid */}
+                <div className="view-map-detail-grid">
+                  <div className="view-map-detail-card">
+                    <h3>
+                      <AlertTriangle size={16} /> Description
+                    </h3>
+                    <p className="view-map-detail-text">
+                      {selectedReport.description || "No description provided"}
+                    </p>
+                  </div>
+
+                  <div className="view-map-detail-card">
+                    <h3>
+                      <Filter size={16} /> Details
+                    </h3>
+                    <div className="view-map-detail-row">
+                      <span>Type:</span>
+                      <strong>{selectedReport.type}</strong>
+                    </div>
+                    <div className="view-map-detail-row">
+                      <span>Date:</span>
+                      <strong>
+                        {new Date(selectedReport.reportedAt).toLocaleString()}
+                      </strong>
+                    </div>
+                    <div className="view-map-detail-row">
+                      <span>Location:</span>
+                      <strong>
+                        {selectedReport.location.coordinates[1].toFixed(5)},{" "}
+                        {selectedReport.location.coordinates[0].toFixed(5)}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {selectedReport.reportedBy && (
+                    <div className="view-map-detail-card">
+                      <h3>
+                        <User size={16} /> Reporter Information
+                      </h3>
+                      <div className="view-map-detail-row">
+                        <span>Name:</span>
+                        <strong>{selectedReport.reportedBy.name}</strong>
+                      </div>
+                      {selectedReport.reportedBy.email && (
+                        <div className="view-map-detail-row">
+                          <span>Email:</span>
+                          <strong>
+                            <a
+                              href={`mailto:${selectedReport.reportedBy.email}`}
+                            >
+                              {selectedReport.reportedBy.email}
+                            </a>
+                          </strong>
+                        </div>
+                      )}
+                      {selectedReport.reportedBy.phone && (
+                        <div className="view-map-detail-row">
+                          <span>Phone:</span>
+                          <strong>
+                            <a href={`tel:${selectedReport.reportedBy.phone}`}>
+                              {selectedReport.reportedBy.phone}
+                            </a>
+                          </strong>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Rejection Reason if exists */}
+                  {selectedReport.rejectionReason && (
+                    <div className="view-map-detail-card view-map-rejection-reason-display">
+                      <h3>
+                        <AlertTriangle size={16} /> Rejection Reason
+                      </h3>
+                      <p className="view-map-detail-text view-map-rejection-text">
+                        {selectedReport.rejectionReason}
+                      </p>
+                      {selectedReport.rejectedAt && (
+                        <div className="view-map-detail-row">
+                          <span>Rejected At:</span>
+                          <strong>
+                            {new Date(
+                              selectedReport.rejectedAt
+                            ).toLocaleString()}
+                          </strong>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* RIGHT COLUMN: Map Section */}
+                <div className="view-map-map-section">
+                  <h3>
+                    <MapIcon size={16} style={{ marginRight: 8 }} />
+                    Incident Location
+                  </h3>
+                  <div
+                    id="detail-report-map"
+                    className="view-map-report-map-container"
+                  ></div>
+                </div>
+              </div>
+              {/* END SPLIT LAYOUT */}
+
+              {/* SOS Section */}
+              {selectedReport.isSOS && (
+                <div className="view-map-sos-section">
+                  <div className="view-map-sos-alert">
+                    <AlertTriangle className="view-map-sos-icon" size={20} />
+                    <span>EMERGENCY SOS REPORT</span>
+                  </div>
+                </div>
+              )}
 
               {/* Media Section */}
               {selectedReport.mediaUrl &&
                 selectedReport.mediaUrl.length > 0 && (
-                  <div className="media-section">
-                    <h3 className="section-title">Media Evidence</h3>
-                    <div className="media-grid">
+                  <div className="view-map-media-section">
+                    <h3>Attached Media ({selectedReport.mediaUrl.length})</h3>
+                    <div className="view-map-media-grid">
                       {selectedReport.mediaUrl.map((url, index) => (
-                        <div key={index} className="media-item">
+                        <div key={index} className="view-map-media-item">
                           {isVideoUrl(url) ? (
-                            <div className="video-container">
+                            <div className="view-map-video-wrapper">
                               <video
-                                src={url}
                                 controls
-                                className="report-video"
-                                poster=""
+                                className="view-map-media-video"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                }}
                               >
+                                <source src={url} />
                                 Your browser does not support the video tag.
                               </video>
                             </div>
                           ) : (
-                            <div className="image-container">
+                            <div
+                              className="view-map-image-wrapper"
+                              onClick={() => {
+                                // Create zoom functionality
+                                const zoomModal = document.createElement("div");
+                                zoomModal.className =
+                                  "view-map-zoom-modal-overlay";
+                                zoomModal.innerHTML = `
+                                  <div class="view-map-zoom-modal-content">
+                                    <button class="view-map-zoom-close-btn" aria-label="Close zoom">
+                                      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                      </svg>
+                                    </button>
+                                    <img src="${url}" alt="Zoomed view" class="view-map-zoomed-image" />
+                                  </div>
+                                `;
+                                document.body.appendChild(zoomModal);
+
+                                const closeZoom = () => {
+                                  zoomModal.remove();
+                                };
+
+                                zoomModal.addEventListener("click", closeZoom);
+                                zoomModal
+                                  .querySelector(".view-map-zoom-close-btn")
+                                  .addEventListener("click", closeZoom);
+                              }}
+                            >
                               <img
                                 src={url || "/placeholder.svg"}
-                                alt={`Report evidence ${index + 1}`}
-                                className="report-image"
+                                alt={`Report media ${index + 1}`}
                                 onError={(e) => {
                                   e.target.style.display = "none";
                                 }}
                               />
+                              <div className="view-map-zoom-overlay">
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                  />
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                  />
+                                </svg>
+                                <span>Click to zoom</span>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -826,193 +1478,28 @@ const ViewMap = () => {
                     </div>
                   </div>
                 )}
-
-              {/* Description */}
-              <div className="description-section">
-                <h3 className="section-title">Description</h3>
-                <p className="report-description">
-                  {selectedReport.description || "No description provided"}
-                </p>
-              </div>
-
-              {/* Report Information */}
-              <div className="info-grid">
-                <div className="info-item">
-                  <LocationIcon className="info-icon" size={18} />
-                  <div>
-                    <span className="info-label">Location</span>
-                    <span className="info-value">
-                      {selectedReport.location?.coordinates[1]?.toFixed(6)},{" "}
-                      {selectedReport.location?.coordinates[0]?.toFixed(6)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="info-item">
-                  <Calendar className="info-icon" size={18} />
-                  <div>
-                    <span className="info-label">Reported At</span>
-                    <span className="info-value">
-                      {new Date(selectedReport.reportedAt).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="info-item">
-                  <CheckCircle
-                    className={`info-icon ${
-                      selectedReport.isVerified ? "verified" : "unverified"
-                    }`}
-                    size={18}
-                  />
-                  <div>
-                    <span className="info-label">Verification Status</span>
-                    <span
-                      className={`info-value ${
-                        selectedReport.isVerified ? "verified" : "unverified"
-                      }`}
-                    >
-                      {selectedReport.isVerified
-                        ? "Verified"
-                        : "Pending Verification"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="info-item">
-                  <User className="info-icon" size={18} />
-                  <div>
-                    <span className="info-label">Report ID</span>
-                    <span className="info-value">{selectedReport._id}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* SOS Badge */}
-              {selectedReport.isSOS && (
-                <div className="sos-section">
-                  <div className="sos-alert">
-                    <AlertTriangle className="sos-icon" size={20} />
-                    <span>EMERGENCY SOS REPORT</span>
-                  </div>
-                </div>
-              )}
-
-              {/* External Link */}
-              <div className="action-section">
-                <button
-                  className="external-link-btn"
-                  onClick={() => {
-                    const [lng, lat] = selectedReport.location.coordinates;
-                    window.open(
-                      `https://maps.google.com/?q=${lat},${lng}`,
-                      "_blank"
-                    );
-                  }}
-                >
-                  <ExternalLink size={16} />
-                  View on Google Maps
-                </button>
-              </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Social Media Post Modal */}
-      {showModal && modalType === "social" && selectedSocialPost && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            {/* Modal Header */}
-            <div className="modal-header">
-              <h2 className="modal-title">📱 Social Media Alert</h2>
-              <button className="modal-close" onClick={closeModal}>
-                <X size={24} />
+            <div className="view-map-modal-footer">
+              <button
+                className="view-map-action-btn secondary"
+                onClick={closeModal}
+              >
+                Close
               </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="modal-body">
-              {/* Source */}
-              <div className="social-header">
-                <div className="social-source-badge">
-                  {selectedSocialPost.subreddit || "Social Media"}
-                </div>
-                <div className="flood-detection-badge">
-                  Flood Detection:{" "}
-                  {selectedSocialPost.flood_label === 1
-                    ? "Positive"
-                    : "Negative"}
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="description-section">
-                <h3 className="section-title">Content</h3>
-                <p className="report-description">
-                  {selectedSocialPost.text || "No text content available"}
-                </p>
-              </div>
-
-              {/* Social Media Information */}
-              <div className="info-grid">
-                <div className="info-item">
-                  <LocationIcon className="info-icon" size={18} />
-                  <div>
-                    <span className="info-label">Location</span>
-                    <span className="info-value">
-                      {selectedSocialPost.lat?.toFixed(6)},{" "}
-                      {selectedSocialPost.lon?.toFixed(6)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="info-item">
-                  <Calendar className="info-icon" size={18} />
-                  <div>
-                    <span className="info-label">Posted At</span>
-                    <span className="info-value">
-                      {new Date(selectedSocialPost.date).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="info-item">
-                  <User className="info-icon" size={18} />
-                  <div>
-                    <span className="info-label">Post ID</span>
-                    <span className="info-value">{selectedSocialPost._id}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* External Link */}
-              <div className="action-section">
-                <button
-                  className="external-link-btn"
-                  onClick={() => {
-                    window.open(
-                      `https://maps.google.com/?q=${selectedSocialPost.lat},${selectedSocialPost.lon}`,
-                      "_blank"
-                    );
-                  }}
-                >
-                  <ExternalLink size={16} />
-                  View on Google Maps
-                </button>
-                {selectedSocialPost.url && (
-                  <button
-                    className="external-link-btn"
-                    onClick={() => {
-                      window.open(selectedSocialPost.url, "_blank");
-                    }}
-                    style={{ marginTop: "1rem" }}
-                  >
-                    <ExternalLink size={16} />
-                    View Original Post
-                  </button>
-                )}
-              </div>
+              <button
+                className="view-map-action-btn primary"
+                onClick={() => {
+                  const [lng, lat] = selectedReport.location.coordinates;
+                  window.open(
+                    `https://maps.google.com/?q=${lat},${lng}`,
+                    "_blank"
+                  );
+                }}
+              >
+                <ExternalLink size={16} />
+                View on Google Maps
+              </button>
             </div>
           </div>
         </div>

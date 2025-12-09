@@ -150,7 +150,7 @@ const Sidebar = () => {
     { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { name: "View Map", icon: Map, path: "/view-map" },
     { name: "Reports", icon: FileBarChart, path: "/reports" },
-    { name: "Call Reports", icon: Phone, path: "/call-reports" }, // Added Call Reports
+    { name: "Call Reports", icon: Phone, path: "/call-reports" },
 
     { name: "Create Alert", icon: Bell, path: "/create-alert" },
     {
@@ -159,6 +159,7 @@ const Sidebar = () => {
       path: "/social-media-analysis",
     },
     { name: "Approve Users", icon: UserCheck, path: "/approve-users" },
+    { name: "SMS Reports", icon: MessageCircleMore, path: "/sms-reports" },
   ];
 
   return (

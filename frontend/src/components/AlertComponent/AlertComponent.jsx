@@ -1,744 +1,8 @@
-// // // // components/AlertComponent.jsx
-// // // import React, { useState, useEffect } from "react";
-// // // import axios from "axios";
-// // // import {
-// // //   AlertTriangle,
-// // //   Plus,
-// // //   Edit,
-// // //   Trash2,
-// // //   MapPin,
-// // //   Calendar,
-// // //   ToggleLeft,
-// // //   ToggleRight,
-// // //   Save,
-// // //   X,
-// // // } from "lucide-react";
-// // // import "./AlertComponent.css";
+// //-------------------------------------------------NEW CODE-----------------------------------------------------------------------------------
 
-// // // const AlertComponent = () => {
-// // //   const [alerts, setAlerts] = useState([]);
-// // //   const [showForm, setShowForm] = useState(false);
-// // //   const [editingAlert, setEditingAlert] = useState(null);
-// // //   const [loading, setLoading] = useState(false);
-// // //   const [formData, setFormData] = useState({
-// // //     type: "Red Alert",
-// // //     title: "",
-// // //     location: "",
-// // //     description: "",
-// // //   });
+// "use client";
 
-// // //   const API_BASE_URL = "http://localhost:3000/alerts";
-
-// // //   // Fetch all alerts
-// // //   const fetchAlerts = async () => {
-// // //     try {
-// // //       setLoading(true);
-// // //       const response = await axios.get(API_BASE_URL);
-// // //       setAlerts(response.data.data);
-// // //     } catch (error) {
-// // //       console.error("Error fetching alerts:", error);
-// // //       alert("Failed to fetch alerts");
-// // //     } finally {
-// // //       setLoading(false);
-// // //     }
-// // //   };
-
-// // //   useEffect(() => {
-// // //     fetchAlerts();
-// // //   }, []);
-
-// // //   // Handle form input changes
-// // //   const handleInputChange = (e) => {
-// // //     const { name, value } = e.target;
-// // //     setFormData((prev) => ({
-// // //       ...prev,
-// // //       [name]: value,
-// // //     }));
-// // //   };
-
-// // //   // Reset form
-// // //   const resetForm = () => {
-// // //     setFormData({
-// // //       type: "Red Alert",
-// // //       title: "",
-// // //       location: "",
-// // //       description: "",
-// // //     });
-// // //     setShowForm(false);
-// // //     setEditingAlert(null);
-// // //   };
-
-// // //   // Create new alert
-// // //   const createAlert = async (e) => {
-// // //     e.preventDefault();
-// // //     try {
-// // //       setLoading(true);
-// // //       await axios.post(API_BASE_URL, formData);
-// // //       fetchAlerts();
-// // //       resetForm();
-// // //       alert("Alert created successfully!");
-// // //     } catch (error) {
-// // //       console.error("Error creating alert:", error);
-// // //       alert("Failed to create alert");
-// // //     } finally {
-// // //       setLoading(false);
-// // //     }
-// // //   };
-
-// // //   // Update alert
-// // //   const updateAlert = async (e) => {
-// // //     e.preventDefault();
-// // //     try {
-// // //       setLoading(true);
-// // //       await axios.put(`${API_BASE_URL}/${editingAlert}`, formData);
-// // //       fetchAlerts();
-// // //       resetForm();
-// // //       alert("Alert updated successfully!");
-// // //     } catch (error) {
-// // //       console.error("Error updating alert:", error);
-// // //       alert("Failed to update alert");
-// // //     } finally {
-// // //       setLoading(false);
-// // //     }
-// // //   };
-
-// // //   // Delete alert
-// // //   const deleteAlert = async (id) => {
-// // //     if (window.confirm("Are you sure you want to delete this alert?")) {
-// // //       try {
-// // //         setLoading(true);
-// // //         await axios.delete(`${API_BASE_URL}/${id}`);
-// // //         fetchAlerts();
-// // //         alert("Alert deleted successfully!");
-// // //       } catch (error) {
-// // //         console.error("Error deleting alert:", error);
-// // //         alert("Failed to delete alert");
-// // //       } finally {
-// // //         setLoading(false);
-// // //       }
-// // //     }
-// // //   };
-
-// // //   // Toggle alert status
-// // //   const toggleAlertStatus = async (id) => {
-// // //     try {
-// // //       await axios.patch(`${API_BASE_URL}/${id}/toggle`);
-// // //       fetchAlerts();
-// // //     } catch (error) {
-// // //       console.error("Error toggling alert status:", error);
-// // //       alert("Failed to update alert status");
-// // //     }
-// // //   };
-
-// // //   // Start editing
-// // //   const startEdit = (alert) => {
-// // //     setEditingAlert(alert._id);
-// // //     setFormData({
-// // //       type: alert.type,
-// // //       title: alert.title,
-// // //       location: alert.location,
-// // //       description: alert.description || "",
-// // //     });
-// // //     setShowForm(true);
-// // //   };
-
-// // //   // Format date
-// // //   const formatDate = (dateString) => {
-// // //     return new Date(dateString).toLocaleDateString("en-GB", {
-// // //       day: "2-digit",
-// // //       month: "short",
-// // //       year: "numeric",
-// // //     });
-// // //   };
-
-// // //   return (
-// // //     <div className="alert-container">
-// // //       <div className="alert-header">
-// // //         <h1>Alert Management System</h1>
-// // //         <button
-// // //           className="btn btn-primary"
-// // //           onClick={() => setShowForm(true)}
-// // //           disabled={loading}
-// // //         >
-// // //           <Plus size={20} />
-// // //           Create New Alert
-// // //         </button>
-// // //       </div>
-
-// // //       {/* Alert Form */}
-// // //       {showForm && (
-// // //         <div className="alert-form-overlay">
-// // //           <div className="alert-form">
-// // //             <div className="form-header">
-// // //               <h2>{editingAlert ? "Edit Alert" : "Create New Alert"}</h2>
-// // //               <button className="btn-close" onClick={resetForm}>
-// // //                 <X size={20} />
-// // //               </button>
-// // //             </div>
-
-// // //             <form onSubmit={editingAlert ? updateAlert : createAlert}>
-// // //               <div className="form-group">
-// // //                 <label htmlFor="type">Alert Type</label>
-// // //                 <select
-// // //                   id="type"
-// // //                   name="type"
-// // //                   value={formData.type}
-// // //                   onChange={handleInputChange}
-// // //                   required
-// // //                 >
-// // //                   <option value="Red Alert">Red Alert</option>
-// // //                   <option value="Orange Alert">Orange Alert</option>
-// // //                   <option value="Yellow Alert">Yellow Alert</option>
-// // //                   <option value="Green Alert">Green Alert</option>
-// // //                 </select>
-// // //               </div>
-
-// // //               <div className="form-group">
-// // //                 <label htmlFor="title">Alert Title</label>
-// // //                 <input
-// // //                   type="text"
-// // //                   id="title"
-// // //                   name="title"
-// // //                   value={formData.title}
-// // //                   onChange={handleInputChange}
-// // //                   placeholder="e.g., High Wave Alert"
-// // //                   required
-// // //                 />
-// // //               </div>
-
-// // //               <div className="form-group">
-// // //                 <label htmlFor="location">Location</label>
-// // //                 <input
-// // //                   type="text"
-// // //                   id="location"
-// // //                   name="location"
-// // //                   value={formData.location}
-// // //                   onChange={handleInputChange}
-// // //                   placeholder="e.g., Marina Beach, Chennai"
-// // //                   required
-// // //                 />
-// // //               </div>
-
-// // //               <div className="form-group">
-// // //                 <label htmlFor="description">Description (Optional)</label>
-// // //                 <textarea
-// // //                   id="description"
-// // //                   name="description"
-// // //                   value={formData.description}
-// // //                   onChange={handleInputChange}
-// // //                   placeholder="Additional details about the alert..."
-// // //                   rows="3"
-// // //                 />
-// // //               </div>
-
-// // //               <div className="form-actions">
-// // //                 <button
-// // //                   type="button"
-// // //                   className="btn btn-secondary"
-// // //                   onClick={resetForm}
-// // //                   disabled={loading}
-// // //                 >
-// // //                   Cancel
-// // //                 </button>
-// // //                 <button
-// // //                   type="submit"
-// // //                   className="btn btn-primary"
-// // //                   disabled={loading}
-// // //                 >
-// // //                   <Save size={16} />
-// // //                   {editingAlert ? "Update Alert" : "Create Alert"}
-// // //                 </button>
-// // //               </div>
-// // //             </form>
-// // //           </div>
-// // //         </div>
-// // //       )}
-
-// // //       {/* Loading state */}
-// // //       {loading && <div className="loading">Loading...</div>}
-
-// // //       {/* Alerts List */}
-// // //       <div className="alerts-grid">
-// // //         {alerts.map((alert) => (
-// // //           <div
-// // //             key={alert._id}
-// // //             className={`alert-card ${alert.type
-// // //               .toLowerCase()
-// // //               .replace(" ", "-")} ${!alert.isActive ? "inactive" : ""}`}
-// // //           >
-// // //             <div className="alert-card-header">
-// // //               <div className="alert-type">
-// // //                 <AlertTriangle size={20} />
-// // //                 {alert.type}
-// // //               </div>
-// // //               <div className="alert-date">
-// // //                 <Calendar size={16} />
-// // //                 {formatDate(alert.createdAt)}
-// // //               </div>
-// // //             </div>
-
-// // //             <h3 className="alert-title">{alert.title}</h3>
-
-// // //             <div className="alert-location">
-// // //               <MapPin size={16} />
-// // //               {alert.location}
-// // //             </div>
-
-// // //             {alert.description && (
-// // //               <p className="alert-description">{alert.description}</p>
-// // //             )}
-
-// // //             <div className="alert-actions">
-// // //               <button
-// // //                 className="btn-action"
-// // //                 onClick={() => toggleAlertStatus(alert._id)}
-// // //                 title={alert.isActive ? "Deactivate" : "Activate"}
-// // //               >
-// // //                 {alert.isActive ? (
-// // //                   <ToggleRight size={20} />
-// // //                 ) : (
-// // //                   <ToggleLeft size={20} />
-// // //                 )}
-// // //               </button>
-
-// // //               <button
-// // //                 className="btn-action"
-// // //                 onClick={() => startEdit(alert)}
-// // //                 title="Edit Alert"
-// // //               >
-// // //                 <Edit size={18} />
-// // //               </button>
-
-// // //               <button
-// // //                 className="btn-action btn-danger"
-// // //                 onClick={() => deleteAlert(alert._id)}
-// // //                 title="Delete Alert"
-// // //               >
-// // //                 <Trash2 size={18} />
-// // //               </button>
-// // //             </div>
-
-// // //             {!alert.isActive && <div className="inactive-badge">Inactive</div>}
-// // //           </div>
-// // //         ))}
-// // //       </div>
-
-// // //       {alerts.length === 0 && !loading && (
-// // //         <div className="empty-state">
-// // //           <AlertTriangle size={48} />
-// // //           <h3>No alerts found</h3>
-// // //           <p>Create your first alert to get started</p>
-// // //         </div>
-// // //       )}
-// // //     </div>
-// // //   );
-// // // };
-
-// // // export default AlertComponent;
-// // //---------------------------------------------------NEW CODE----------------------------------------------------------------------------------
-// // import React, { useState, useEffect } from "react";
-// // import axios from "axios";
-// // import {
-// //   AlertTriangle,
-// //   Plus,
-// //   Edit,
-// //   Trash2,
-// //   MapPin,
-// //   Calendar,
-// //   ToggleLeft,
-// //   ToggleRight,
-// //   Save,
-// //   X,
-// //   RefreshCw,
-// // } from "lucide-react";
-// // import "./AlertComponent.css";
-
-// // const AlertComponent = () => {
-// //   const [alerts, setAlerts] = useState([]);
-// //   const [showForm, setShowForm] = useState(false);
-// //   const [editingAlert, setEditingAlert] = useState(null);
-// //   const [loading, setLoading] = useState(false);
-// //   const [error, setError] = useState(null);
-// //   const [formData, setFormData] = useState({
-// //     type: "Red Alert",
-// //     title: "",
-// //     location: "",
-// //     description: "",
-// //   });
-
-// //   const API_BASE_URL = "http://localhost:3000/alerts";
-
-// //   // Fetch all alerts
-// //   const fetchAlerts = async () => {
-// //     try {
-// //       setLoading(true);
-// //       setError(null);
-// //       const response = await axios.get(API_BASE_URL);
-// //       setAlerts(response.data.data || []);
-// //     } catch (error) {
-// //       console.error("Error fetching alerts:", error);
-// //       setError(
-// //         "Failed to fetch alerts. Please check if the server is running."
-// //       );
-// //     } finally {
-// //       setLoading(false);
-// //     }
-// //   };
-
-// //   useEffect(() => {
-// //     fetchAlerts();
-// //   }, []);
-
-// //   // Handle form input changes
-// //   const handleInputChange = (e) => {
-// //     const { name, value } = e.target;
-// //     setFormData((prev) => ({
-// //       ...prev,
-// //       [name]: value,
-// //     }));
-// //   };
-
-// //   // Reset form
-// //   const resetForm = () => {
-// //     setFormData({
-// //       type: "Red Alert",
-// //       title: "",
-// //       location: "",
-// //       description: "",
-// //     });
-// //     setShowForm(false);
-// //     setEditingAlert(null);
-// //     setError(null);
-// //   };
-
-// //   // Show success message
-// //   const showSuccessMessage = (message) => {
-// //     // You can replace this with a proper toast notification
-// //     alert(message);
-// //   };
-
-// //   // Create new alert
-// //   const createAlert = async (e) => {
-// //     e.preventDefault();
-// //     try {
-// //       setLoading(true);
-// //       setError(null);
-// //       await axios.post(API_BASE_URL, formData);
-// //       await fetchAlerts();
-// //       resetForm();
-// //       showSuccessMessage("Alert created successfully!");
-// //     } catch (error) {
-// //       console.error("Error creating alert:", error);
-// //       setError("Failed to create alert. Please try again.");
-// //     } finally {
-// //       setLoading(false);
-// //     }
-// //   };
-
-// //   // Update alert
-// //   const updateAlert = async (e) => {
-// //     e.preventDefault();
-// //     try {
-// //       setLoading(true);
-// //       setError(null);
-// //       await axios.put(`${API_BASE_URL}/${editingAlert}`, formData);
-// //       await fetchAlerts();
-// //       resetForm();
-// //       showSuccessMessage("Alert updated successfully!");
-// //     } catch (error) {
-// //       console.error("Error updating alert:", error);
-// //       setError("Failed to update alert. Please try again.");
-// //     } finally {
-// //       setLoading(false);
-// //     }
-// //   };
-
-// //   // Delete alert
-// //   const deleteAlert = async (id) => {
-// //     if (window.confirm("Are you sure you want to delete this alert?")) {
-// //       try {
-// //         setLoading(true);
-// //         await axios.delete(`${API_BASE_URL}/${id}`);
-// //         await fetchAlerts();
-// //         showSuccessMessage("Alert deleted successfully!");
-// //       } catch (error) {
-// //         console.error("Error deleting alert:", error);
-// //         setError("Failed to delete alert. Please try again.");
-// //       } finally {
-// //         setLoading(false);
-// //       }
-// //     }
-// //   };
-
-// //   // Toggle alert status
-// //   const toggleAlertStatus = async (id) => {
-// //     try {
-// //       await axios.patch(`${API_BASE_URL}/${id}/toggle`);
-// //       await fetchAlerts();
-// //     } catch (error) {
-// //       console.error("Error toggling alert status:", error);
-// //       setError("Failed to update alert status. Please try again.");
-// //     }
-// //   };
-
-// //   // Start editing
-// //   const startEdit = (alert) => {
-// //     setEditingAlert(alert._id);
-// //     setFormData({
-// //       type: alert.type,
-// //       title: alert.title,
-// //       location: alert.location,
-// //       description: alert.description || "",
-// //     });
-// //     setShowForm(true);
-// //   };
-
-// //   // Format date
-// //   const formatDate = (dateString) => {
-// //     return new Date(dateString).toLocaleDateString("en-GB", {
-// //       day: "2-digit",
-// //       month: "short",
-// //       year: "numeric",
-// //     });
-// //   };
-
-// //   return (
-// //     <div className="alert-main-container">
-// //       <div className="alert-content">
-// //         <div className="alert-header">
-// //           <div className="alert-title-section">
-// //             <h1>Alert Management System</h1>
-// //             <p className="alert-subtitle">Manage and monitor safety alerts</p>
-// //           </div>
-// //           <div className="alert-actions-section">
-// //             <button
-// //               className="btn btn-refresh"
-// //               onClick={fetchAlerts}
-// //               disabled={loading}
-// //               title="Refresh alerts"
-// //             >
-// //               <RefreshCw size={18} className={loading ? "spinning" : ""} />
-// //               Refresh
-// //             </button>
-// //             <button
-// //               className="btn btn-primary"
-// //               onClick={() => setShowForm(true)}
-// //               disabled={loading}
-// //             >
-// //               <Plus size={20} />
-// //               Create New Alert
-// //             </button>
-// //           </div>
-// //         </div>
-
-// //         {/* Error Message */}
-// //         {error && (
-// //           <div className="error-message">
-// //             <AlertTriangle size={20} />
-// //             {error}
-// //             <button className="error-close" onClick={() => setError(null)}>
-// //               <X size={16} />
-// //             </button>
-// //           </div>
-// //         )}
-
-// //         {/* Alert Form Modal */}
-// //         {showForm && (
-// //           <div className="alert-form-overlay">
-// //             <div className="alert-form">
-// //               <div className="form-header">
-// //                 <h2>{editingAlert ? "Edit Alert" : "Create New Alert"}</h2>
-// //                 <button className="btn-close" onClick={resetForm} type="button">
-// //                   <X size={20} />
-// //                 </button>
-// //               </div>
-
-// //               <form onSubmit={editingAlert ? updateAlert : createAlert}>
-// //                 <div className="form-group">
-// //                   <label htmlFor="type">Alert Type *</label>
-// //                   <select
-// //                     id="type"
-// //                     name="type"
-// //                     value={formData.type}
-// //                     onChange={handleInputChange}
-// //                     required
-// //                     className="form-select"
-// //                   >
-// //                     <option value="Red Alert">Red Alert</option>
-// //                     <option value="Orange Alert">Orange Alert</option>
-// //                     <option value="Yellow Alert">Yellow Alert</option>
-// //                     <option value="Green Alert">Green Alert</option>
-// //                   </select>
-// //                 </div>
-
-// //                 <div className="form-group">
-// //                   <label htmlFor="title">Alert Title *</label>
-// //                   <input
-// //                     type="text"
-// //                     id="title"
-// //                     name="title"
-// //                     value={formData.title}
-// //                     onChange={handleInputChange}
-// //                     placeholder="e.g., High Wave Alert, Tsunami Warning"
-// //                     required
-// //                     className="form-input"
-// //                   />
-// //                 </div>
-
-// //                 <div className="form-group">
-// //                   <label htmlFor="location">Location *</label>
-// //                   <input
-// //                     type="text"
-// //                     id="location"
-// //                     name="location"
-// //                     value={formData.location}
-// //                     onChange={handleInputChange}
-// //                     placeholder="e.g., Marina Beach, Chennai, Tamil Nadu"
-// //                     required
-// //                     className="form-input"
-// //                   />
-// //                 </div>
-
-// //                 <div className="form-group">
-// //                   <label htmlFor="description">Description (Optional)</label>
-// //                   <textarea
-// //                     id="description"
-// //                     name="description"
-// //                     value={formData.description}
-// //                     onChange={handleInputChange}
-// //                     placeholder="Additional details about the alert, safety measures, expected duration..."
-// //                     rows="4"
-// //                     className="form-textarea"
-// //                   />
-// //                 </div>
-
-// //                 <div className="form-actions">
-// //                   <button
-// //                     type="button"
-// //                     className="btn btn-secondary"
-// //                     onClick={resetForm}
-// //                     disabled={loading}
-// //                   >
-// //                     Cancel
-// //                   </button>
-// //                   <button
-// //                     type="submit"
-// //                     className="btn btn-primary"
-// //                     disabled={loading}
-// //                   >
-// //                     <Save size={16} />
-// //                     {editingAlert ? "Update Alert" : "Create Alert"}
-// //                   </button>
-// //                 </div>
-// //               </form>
-// //             </div>
-// //           </div>
-// //         )}
-
-// //         {/* Loading state */}
-// //         {loading && alerts.length === 0 && (
-// //           <div className="loading-container">
-// //             <RefreshCw size={24} className="spinning" />
-// //             <p>Loading alerts...</p>
-// //           </div>
-// //         )}
-
-// //         {/* Alerts Grid */}
-// //         <div className="alerts-grid">
-// //           {alerts.map((alert) => (
-// //             <div
-// //               key={alert._id}
-// //               className={`alert-card ${alert.type
-// //                 .toLowerCase()
-// //                 .replace(" ", "-")} ${!alert.isActive ? "inactive" : ""}`}
-// //             >
-// //               <div className="alert-card-header">
-// //                 <div className="alert-type">
-// //                   <AlertTriangle size={18} />
-// //                   <span>{alert.type}</span>
-// //                 </div>
-// //                 <div className="alert-date">
-// //                   <Calendar size={14} />
-// //                   <span>{formatDate(alert.createdAt)}</span>
-// //                 </div>
-// //               </div>
-
-// //               <h3 className="alert-title">{alert.title}</h3>
-
-// //               <div className="alert-location">
-// //                 <MapPin size={16} />
-// //                 <span>{alert.location}</span>
-// //               </div>
-
-// //               {alert.description && (
-// //                 <p className="alert-description">{alert.description}</p>
-// //               )}
-
-// //               <div className="alert-actions">
-// //                 <button
-// //                   className={`btn-action ${
-// //                     alert.isActive ? "active" : "inactive"
-// //                   }`}
-// //                   onClick={() => toggleAlertStatus(alert._id)}
-// //                   title={alert.isActive ? "Deactivate Alert" : "Activate Alert"}
-// //                 >
-// //                   {alert.isActive ? (
-// //                     <ToggleRight size={18} />
-// //                   ) : (
-// //                     <ToggleLeft size={18} />
-// //                   )}
-// //                 </button>
-
-// //                 <button
-// //                   className="btn-action edit"
-// //                   onClick={() => startEdit(alert)}
-// //                   title="Edit Alert"
-// //                 >
-// //                   <Edit size={16} />
-// //                 </button>
-
-// //                 <button
-// //                   className="btn-action delete"
-// //                   onClick={() => deleteAlert(alert._id)}
-// //                   title="Delete Alert"
-// //                 >
-// //                   <Trash2 size={16} />
-// //                 </button>
-// //               </div>
-
-// //               {!alert.isActive && (
-// //                 <div className="inactive-badge">Inactive</div>
-// //               )}
-// //             </div>
-// //           ))}
-// //         </div>
-
-// //         {/* Empty State */}
-// //         {alerts.length === 0 && !loading && (
-// //           <div className="empty-state">
-// //             <div className="empty-state-icon">
-// //               <AlertTriangle size={64} />
-// //             </div>
-// //             <h3>No alerts found</h3>
-// //             <p>Create your first alert to start monitoring safety conditions</p>
-// //             <button
-// //               className="btn btn-primary"
-// //               onClick={() => setShowForm(true)}
-// //             >
-// //               <Plus size={20} />
-// //               Create First Alert
-// //             </button>
-// //           </div>
-// //         )}
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-// // export default AlertComponent;
-
-// // components/AlertComponent.jsx
-// import React, { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 // import axios from "axios";
 // import {
 //   AlertTriangle,
@@ -747,8 +11,6 @@
 //   Trash2,
 //   MapPin,
 //   Calendar,
-//   ToggleLeft,
-//   ToggleRight,
 //   Save,
 //   X,
 //   RefreshCw,
@@ -941,24 +203,29 @@
 //   };
 
 //   return (
-//     <div className="alert-container">
+//     <div className="alert-component-container">
 //       {/* Header Section */}
-//       <div className="alert-header">
-//         <div className="header-left">
+//       <div className="alert-component-header">
+//         <div className="alert-component-header-left">
 //           <h1>Alert Management System</h1>
-//           <p className="header-subtitle">Monitor and manage emergency alerts</p>
+//           <p className="alert-component-header-subtitle">
+//             Monitor and manage emergency alerts
+//           </p>
 //         </div>
-//         <div className="header-actions">
+//         <div className="alert-component-header-actions">
 //           <button
-//             className="btn btn-refresh"
+//             className="alert-component-btn alert-component-btn-refresh"
 //             onClick={fetchAlerts}
 //             disabled={loading}
 //             title="Refresh alerts"
 //           >
-//             <RefreshCw size={18} className={loading ? "spinning" : ""} />
+//             <RefreshCw
+//               size={18}
+//               className={loading ? "alert-component-spinning" : ""}
+//             />
 //           </button>
 //           <button
-//             className="btn btn-primary"
+//             className="alert-component-btn alert-component-btn-primary"
 //             onClick={() => setShowForm(true)}
 //             disabled={loading}
 //           >
@@ -970,18 +237,24 @@
 
 //       {/* Success/Error Messages */}
 //       {success && (
-//         <div className="message message-success">
+//         <div className="alert-component-message alert-component-message-success">
 //           <span>{success}</span>
-//           <button onClick={() => setSuccess(null)} className="message-close">
+//           <button
+//             onClick={() => setSuccess(null)}
+//             className="alert-component-message-close"
+//           >
 //             <X size={16} />
 //           </button>
 //         </div>
 //       )}
 
 //       {error && (
-//         <div className="message message-error">
+//         <div className="alert-component-message alert-component-message-error">
 //           <span>{error}</span>
-//           <button onClick={() => setError(null)} className="message-close">
+//           <button
+//             onClick={() => setError(null)}
+//             className="alert-component-message-close"
+//           >
 //             <X size={16} />
 //           </button>
 //         </div>
@@ -990,19 +263,23 @@
 //       {/* Alert Form Modal */}
 //       {showForm && (
 //         <div
-//           className="alert-form-overlay"
+//           className="alert-component-form-overlay"
 //           onClick={(e) => e.target === e.currentTarget && resetForm()}
 //         >
-//           <div className="alert-form">
-//             <div className="form-header">
+//           <div className="alert-component-form">
+//             <div className="alert-component-form-header">
 //               <h2>{editingAlert ? "Edit Alert" : "Create New Alert"}</h2>
-//               <button className="btn-close" onClick={resetForm} type="button">
+//               <button
+//                 className="alert-component-btn-close"
+//                 onClick={resetForm}
+//                 type="button"
+//               >
 //                 <X size={20} />
 //               </button>
 //             </div>
 
 //             <form onSubmit={editingAlert ? updateAlert : createAlert}>
-//               <div className="form-group">
+//               <div className="alert-component-form-group">
 //                 <label htmlFor="type">Alert Type *</label>
 //                 <select
 //                   id="type"
@@ -1010,7 +287,7 @@
 //                   value={formData.type}
 //                   onChange={handleInputChange}
 //                   required
-//                   className="form-select"
+//                   className="alert-component-form-select"
 //                 >
 //                   <option value="Red Alert">Red Alert</option>
 //                   <option value="Orange Alert">Orange Alert</option>
@@ -1019,7 +296,7 @@
 //                 </select>
 //               </div>
 
-//               <div className="form-group">
+//               <div className="alert-component-form-group">
 //                 <label htmlFor="title">Alert Title *</label>
 //                 <input
 //                   type="text"
@@ -1029,11 +306,11 @@
 //                   onChange={handleInputChange}
 //                   placeholder="e.g., High Wave Alert"
 //                   required
-//                   className="form-input"
+//                   className="alert-component-form-input"
 //                 />
 //               </div>
 
-//               <div className="form-group">
+//               <div className="alert-component-form-group">
 //                 <label htmlFor="location">Location *</label>
 //                 <input
 //                   type="text"
@@ -1043,11 +320,11 @@
 //                   onChange={handleInputChange}
 //                   placeholder="e.g., Marina Beach, Chennai, Tamil Nadu"
 //                   required
-//                   className="form-input"
+//                   className="alert-component-form-input"
 //                 />
 //               </div>
 
-//               <div className="form-group">
+//               <div className="alert-component-form-group">
 //                 <label htmlFor="description">Description</label>
 //                 <textarea
 //                   id="description"
@@ -1056,14 +333,14 @@
 //                   onChange={handleInputChange}
 //                   placeholder="Additional details about the alert..."
 //                   rows="4"
-//                   className="form-textarea"
+//                   className="alert-component-form-textarea"
 //                 />
 //               </div>
 
-//               <div className="form-actions">
+//               <div className="alert-component-form-actions">
 //                 <button
 //                   type="button"
-//                   className="btn btn-secondary"
+//                   className="alert-component-btn alert-component-btn-secondary"
 //                   onClick={resetForm}
 //                   disabled={loading}
 //                 >
@@ -1071,7 +348,7 @@
 //                 </button>
 //                 <button
 //                   type="submit"
-//                   className="btn btn-primary"
+//                   className="alert-component-btn alert-component-btn-primary"
 //                   disabled={loading}
 //                 >
 //                   <Save size={16} />
@@ -1088,74 +365,78 @@
 //       )}
 
 //       {/* Stats Overview */}
-//       <div className="stats-overview">
-//         <div className="stat-card">
-//           <div className="stat-number">{alerts.length}</div>
-//           <div className="stat-label">Total Alerts</div>
+//       <div className="alert-component-stats-overview">
+//         <div className="alert-component-stat-card">
+//           <div className="alert-component-stat-number">{alerts.length}</div>
+//           <div className="alert-component-stat-label">Total Alerts</div>
 //         </div>
-//         <div className="stat-card">
-//           <div className="stat-number">
+//         <div className="alert-component-stat-card">
+//           <div className="alert-component-stat-number">
 //             {alerts.filter((a) => a.isActive).length}
 //           </div>
-//           <div className="stat-label">Active Alerts</div>
+//           <div className="alert-component-stat-label">Active Alerts</div>
 //         </div>
-//         <div className="stat-card">
-//           <div className="stat-number">
+//         <div className="alert-component-stat-card">
+//           <div className="alert-component-stat-number">
 //             {alerts.filter((a) => !a.isActive).length}
 //           </div>
-//           <div className="stat-label">Inactive Alerts</div>
+//           <div className="alert-component-stat-label">Inactive Alerts</div>
 //         </div>
-//         <div className="stat-card">
-//           <div className="stat-number">
+//         <div className="alert-component-stat-card">
+//           <div className="alert-component-stat-number">
 //             {alerts.filter((a) => a.type === "Red Alert").length}
 //           </div>
-//           <div className="stat-label">Red Alerts</div>
+//           <div className="alert-component-stat-label">Red Alerts</div>
 //         </div>
 //       </div>
 
 //       {/* Loading State */}
 //       {loading && alerts.length === 0 && (
-//         <div className="loading-state">
-//           <RefreshCw size={24} className="spinning" />
+//         <div className="alert-component-loading-state">
+//           <RefreshCw size={24} className="alert-component-spinning" />
 //           <p>Loading alerts...</p>
 //         </div>
 //       )}
 
 //       {/* Alerts Grid */}
-//       <div className="alerts-grid">
+//       <div className="alert-component-alerts-grid">
 //         {alerts.map((alert) => (
 //           <div
 //             key={alert._id}
-//             className={`alert-card ${getAlertColorClass(alert.type)} ${
-//               !alert.isActive ? "inactive" : ""
-//             }`}
+//             className={`alert-component-alert-card alert-component-${getAlertColorClass(
+//               alert.type
+//             )} ${!alert.isActive ? "alert-component-inactive" : ""}`}
 //           >
-//             <div className="alert-card-header">
-//               <div className="alert-type">
+//             <div className="alert-component-alert-card-header">
+//               <div className="alert-component-alert-type">
 //                 <AlertTriangle size={18} />
 //                 <span>{alert.type}</span>
 //               </div>
-//               <div className="alert-date">
+//               <div className="alert-component-alert-date">
 //                 <Calendar size={14} />
 //                 <span>{formatDate(alert.createdAt)}</span>
 //               </div>
 //             </div>
 
-//             <h3 className="alert-title">{alert.title}</h3>
+//             <h3 className="alert-component-alert-title">{alert.title}</h3>
 
-//             <div className="alert-location">
+//             <div className="alert-component-alert-location">
 //               <MapPin size={14} />
 //               <span>{alert.location}</span>
 //             </div>
 
 //             {alert.description && (
-//               <p className="alert-description">{alert.description}</p>
+//               <p className="alert-component-alert-description">
+//                 {alert.description}
+//               </p>
 //             )}
 
-//             <div className="alert-actions">
+//             <div className="alert-component-alert-actions">
 //               <button
-//                 className={`btn-action ${
-//                   alert.isActive ? "active" : "inactive"
+//                 className={`alert-component-btn-action ${
+//                   alert.isActive
+//                     ? "alert-component-active"
+//                     : "alert-component-inactive"
 //                 }`}
 //                 onClick={() => toggleAlertStatus(alert._id)}
 //                 title={alert.isActive ? "Deactivate Alert" : "Activate Alert"}
@@ -1164,7 +445,7 @@
 //               </button>
 
 //               <button
-//                 className="btn-action edit"
+//                 className="alert-component-btn-action alert-component-edit"
 //                 onClick={() => startEdit(alert)}
 //                 title="Edit Alert"
 //               >
@@ -1172,7 +453,7 @@
 //               </button>
 
 //               <button
-//                 className="btn-action delete"
+//                 className="alert-component-btn-action alert-component-delete"
 //                 onClick={() => deleteAlert(alert._id, alert.title)}
 //                 title="Delete Alert"
 //               >
@@ -1180,20 +461,25 @@
 //               </button>
 //             </div>
 
-//             {!alert.isActive && <div className="inactive-badge">Inactive</div>}
+//             {!alert.isActive && (
+//               <div className="alert-component-inactive-badge">Inactive</div>
+//             )}
 //           </div>
 //         ))}
 //       </div>
 
 //       {/* Empty State */}
 //       {alerts.length === 0 && !loading && (
-//         <div className="empty-state">
+//         <div className="alert-component-empty-state">
 //           <AlertTriangle size={48} />
 //           <h3>No alerts found</h3>
 //           <p>
 //             Create your first alert to get started with the monitoring system
 //           </p>
-//           <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+//           <button
+//             className="alert-component-btn alert-component-btn-primary"
+//             onClick={() => setShowForm(true)}
+//           >
 //             <Plus size={20} />
 //             Create First Alert
 //           </button>
@@ -1205,7 +491,7 @@
 
 // export default AlertComponent;
 
-//-------------------------------------------------NEW CODE-----------------------------------------------------------------------------------
+//------------------------------------------------------NEW CODE -----------------------------------------------------------------------------
 
 "use client";
 
@@ -1223,6 +509,10 @@ import {
   RefreshCw,
   Eye,
   EyeOff,
+  FileText,
+  CheckCircle,
+  Activity,
+  Filter,
 } from "lucide-react";
 import "./AlertComponent.css";
 
@@ -1397,10 +687,12 @@ const AlertComponent = () => {
 
   // Format date
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -1414,9 +706,9 @@ const AlertComponent = () => {
       {/* Header Section */}
       <div className="alert-component-header">
         <div className="alert-component-header-left">
-          <h1>Alert Management System</h1>
+          <h1>Alert Management</h1>
           <p className="alert-component-header-subtitle">
-            Monitor and manage emergency alerts
+            Manage and broadcast safety alerts to the community
           </p>
         </div>
         <div className="alert-component-header-actions">
@@ -1430,6 +722,7 @@ const AlertComponent = () => {
               size={18}
               className={loading ? "alert-component-spinning" : ""}
             />
+            Refresh
           </button>
           <button
             className="alert-component-btn alert-component-btn-primary"
@@ -1437,7 +730,7 @@ const AlertComponent = () => {
             disabled={loading}
           >
             <Plus size={20} />
-            Create New Alert
+            Create Alert
           </button>
         </div>
       </div>
@@ -1467,140 +760,47 @@ const AlertComponent = () => {
         </div>
       )}
 
-      {/* Alert Form Modal */}
-      {showForm && (
-        <div
-          className="alert-component-form-overlay"
-          onClick={(e) => e.target === e.currentTarget && resetForm()}
-        >
-          <div className="alert-component-form">
-            <div className="alert-component-form-header">
-              <h2>{editingAlert ? "Edit Alert" : "Create New Alert"}</h2>
-              <button
-                className="alert-component-btn-close"
-                onClick={resetForm}
-                type="button"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <form onSubmit={editingAlert ? updateAlert : createAlert}>
-              <div className="alert-component-form-group">
-                <label htmlFor="type">Alert Type *</label>
-                <select
-                  id="type"
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  required
-                  className="alert-component-form-select"
-                >
-                  <option value="Red Alert">Red Alert</option>
-                  <option value="Orange Alert">Orange Alert</option>
-                  <option value="Yellow Alert">Yellow Alert</option>
-                  <option value="Green Alert">Green Alert</option>
-                </select>
-              </div>
-
-              <div className="alert-component-form-group">
-                <label htmlFor="title">Alert Title *</label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="e.g., High Wave Alert"
-                  required
-                  className="alert-component-form-input"
-                />
-              </div>
-
-              <div className="alert-component-form-group">
-                <label htmlFor="location">Location *</label>
-                <input
-                  type="text"
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Marina Beach, Chennai, Tamil Nadu"
-                  required
-                  className="alert-component-form-input"
-                />
-              </div>
-
-              <div className="alert-component-form-group">
-                <label htmlFor="description">Description</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Additional details about the alert..."
-                  rows="4"
-                  className="alert-component-form-textarea"
-                />
-              </div>
-
-              <div className="alert-component-form-actions">
-                <button
-                  type="button"
-                  className="alert-component-btn alert-component-btn-secondary"
-                  onClick={resetForm}
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="alert-component-btn alert-component-btn-primary"
-                  disabled={loading}
-                >
-                  <Save size={16} />
-                  {loading
-                    ? "Saving..."
-                    : editingAlert
-                    ? "Update Alert"
-                    : "Create Alert"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Stats Overview */}
+      {/* Stats Overview - Updated to match ViewReport Theme */}
       <div className="alert-component-stats-overview">
         <div className="alert-component-stat-card">
-          <div className="alert-component-stat-number">{alerts.length}</div>
-          <div className="alert-component-stat-label">Total Alerts</div>
-        </div>
-        <div className="alert-component-stat-card">
-          <div className="alert-component-stat-number">
-            {alerts.filter((a) => a.isActive).length}
+          <div className="alert-component-stat-info">
+            <span className="alert-component-stat-label">Total Alerts</span>
+            <span className="alert-component-stat-number">{alerts.length}</span>
           </div>
-          <div className="alert-component-stat-label">Active Alerts</div>
-        </div>
-        <div className="alert-component-stat-card">
-          <div className="alert-component-stat-number">
-            {alerts.filter((a) => !a.isActive).length}
+          <div className="alert-component-stat-icon-wrapper blue">
+            <FileText size={24} />
           </div>
-          <div className="alert-component-stat-label">Inactive Alerts</div>
         </div>
+
         <div className="alert-component-stat-card">
-          <div className="alert-component-stat-number">
-            {alerts.filter((a) => a.type === "Red Alert").length}
+          <div className="alert-component-stat-info">
+            <span className="alert-component-stat-label">Active</span>
+            <span className="alert-component-stat-number">
+              {alerts.filter((a) => a.isActive).length}
+            </span>
           </div>
-          <div className="alert-component-stat-label">Red Alerts</div>
+          <div className="alert-component-stat-icon-wrapper green">
+            <Activity size={24} />
+          </div>
+        </div>
+
+        <div className="alert-component-stat-card">
+          <div className="alert-component-stat-info">
+            <span className="alert-component-stat-label">Inactive</span>
+            <span className="alert-component-stat-number">
+              {alerts.filter((a) => !a.isActive).length}
+            </span>
+          </div>
+          <div className="alert-component-stat-icon-wrapper orange">
+            <EyeOff size={24} />
+          </div>
         </div>
       </div>
 
       {/* Loading State */}
       {loading && alerts.length === 0 && (
         <div className="alert-component-loading-state">
-          <RefreshCw size={24} className="alert-component-spinning" />
+          <div className="alert-component-spinner"></div>
           <p>Loading alerts...</p>
         </div>
       )}
@@ -1615,62 +815,74 @@ const AlertComponent = () => {
             )} ${!alert.isActive ? "alert-component-inactive" : ""}`}
           >
             <div className="alert-component-alert-card-header">
-              <div className="alert-component-alert-type">
-                <AlertTriangle size={18} />
-                <span>{alert.type}</span>
+              <div className="alert-component-header-top">
+                <div
+                  className={`alert-component-alert-type ${getAlertColorClass(
+                    alert.type
+                  )}`}
+                >
+                  <AlertTriangle size={12} style={{ marginRight: 6 }} />
+                  {alert.type}
+                </div>
+                {!alert.isActive && (
+                  <div className="alert-component-status-badge inactive">
+                    Inactive
+                  </div>
+                )}
               </div>
               <div className="alert-component-alert-date">
-                <Calendar size={14} />
-                <span>{formatDate(alert.createdAt)}</span>
+                {formatDate(alert.createdAt)}
               </div>
             </div>
 
-            <h3 className="alert-component-alert-title">{alert.title}</h3>
-
-            <div className="alert-component-alert-location">
-              <MapPin size={14} />
-              <span>{alert.location}</span>
-            </div>
-
-            {alert.description && (
-              <p className="alert-component-alert-description">
-                {alert.description}
+            <div className="alert-component-card-content">
+              <p className="alert-component-alert-description-preview">
+                {alert.title}
               </p>
-            )}
+
+              <div className="alert-component-alert-meta">
+                <div className="alert-component-alert-location">
+                  <MapPin size={14} style={{ marginRight: 6 }} />
+                  {alert.location}
+                </div>
+              </div>
+
+              {alert.description && (
+                <p className="alert-component-desc-text">
+                  {alert.description.substring(0, 100)}
+                  {alert.description.length > 100 ? "..." : ""}
+                </p>
+              )}
+            </div>
 
             <div className="alert-component-alert-actions">
               <button
-                className={`alert-component-btn-action ${
-                  alert.isActive
-                    ? "alert-component-active"
-                    : "alert-component-inactive"
-                }`}
-                onClick={() => toggleAlertStatus(alert._id)}
-                title={alert.isActive ? "Deactivate Alert" : "Activate Alert"}
-              >
-                {alert.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
-              </button>
-
-              <button
                 className="alert-component-btn-action alert-component-edit"
                 onClick={() => startEdit(alert)}
-                title="Edit Alert"
               >
-                <Edit size={16} />
+                Edit Details
               </button>
 
-              <button
-                className="alert-component-btn-action alert-component-delete"
-                onClick={() => deleteAlert(alert._id, alert.title)}
-                title="Delete Alert"
-              >
-                <Trash2 size={16} />
-              </button>
+              <div className="alert-component-icon-actions">
+                <button
+                  className={`alert-component-icon-btn ${
+                    alert.isActive ? "active" : "inactive"
+                  }`}
+                  onClick={() => toggleAlertStatus(alert._id)}
+                  title={alert.isActive ? "Deactivate Alert" : "Activate Alert"}
+                >
+                  {alert.isActive ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+
+                <button
+                  className="alert-component-icon-btn delete"
+                  onClick={() => deleteAlert(alert._id, alert.title)}
+                  title="Delete Alert"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
             </div>
-
-            {!alert.isActive && (
-              <div className="alert-component-inactive-badge">Inactive</div>
-            )}
           </div>
         ))}
       </div>
@@ -1678,7 +890,7 @@ const AlertComponent = () => {
       {/* Empty State */}
       {alerts.length === 0 && !loading && (
         <div className="alert-component-empty-state">
-          <AlertTriangle size={48} />
+          <AlertTriangle size={48} style={{ opacity: 0.2, marginBottom: 16 }} />
           <h3>No alerts found</h3>
           <p>
             Create your first alert to get started with the monitoring system
@@ -1686,10 +898,130 @@ const AlertComponent = () => {
           <button
             className="alert-component-btn alert-component-btn-primary"
             onClick={() => setShowForm(true)}
+            style={{ marginTop: 16 }}
           >
             <Plus size={20} />
             Create First Alert
           </button>
+        </div>
+      )}
+
+      {/* Alert Form Modal */}
+      {showForm && (
+        <div
+          className="alert-component-form-overlay"
+          onClick={(e) => e.target === e.currentTarget && resetForm()}
+        >
+          <div className="alert-component-form">
+            <div className="alert-component-form-header">
+              <div>
+                <h2>{editingAlert ? "Edit Alert" : "Create New Alert"}</h2>
+                <span className="alert-component-modal-subtitle">
+                  Enter alert details below
+                </span>
+              </div>
+              <button
+                className="alert-component-btn-close"
+                onClick={resetForm}
+                type="button"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="alert-component-form-body">
+              <form onSubmit={editingAlert ? updateAlert : createAlert}>
+                <div className="alert-component-form-group">
+                  <label htmlFor="type">
+                    <Filter size={14} style={{ marginRight: 8 }} />
+                    Alert Type *
+                  </label>
+                  <select
+                    id="type"
+                    name="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                    required
+                    className="alert-component-form-select"
+                  >
+                    <option value="Red Alert">Red Alert</option>
+                    <option value="Orange Alert">Orange Alert</option>
+                    <option value="Yellow Alert">Yellow Alert</option>
+                    <option value="Green Alert">Green Alert</option>
+                  </select>
+                </div>
+
+                <div className="alert-component-form-group">
+                  <label htmlFor="title">
+                    <FileText size={14} style={{ marginRight: 8 }} />
+                    Alert Title *
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    placeholder="e.g., High Wave Alert"
+                    required
+                    className="alert-component-form-input"
+                  />
+                </div>
+
+                <div className="alert-component-form-group">
+                  <label htmlFor="location">
+                    <MapPin size={14} style={{ marginRight: 8 }} />
+                    Location *
+                  </label>
+                  <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Marina Beach, Chennai"
+                    required
+                    className="alert-component-form-input"
+                  />
+                </div>
+
+                <div className="alert-component-form-group">
+                  <label htmlFor="description">Description</label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Additional details about the alert..."
+                    rows="4"
+                    className="alert-component-form-textarea"
+                  />
+                </div>
+
+                <div className="alert-component-form-actions">
+                  <button
+                    type="button"
+                    className="alert-component-btn alert-component-btn-secondary"
+                    onClick={resetForm}
+                    disabled={loading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="alert-component-btn alert-component-btn-primary"
+                    disabled={loading}
+                  >
+                    {loading
+                      ? "Saving..."
+                      : editingAlert
+                      ? "Update Alert"
+                      : "Create Alert"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
     </div>

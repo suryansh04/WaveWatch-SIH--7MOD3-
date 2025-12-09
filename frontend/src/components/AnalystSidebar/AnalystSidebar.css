@@ -1,0 +1,259 @@
+/* Analyst Sidebar Main Styles */
+.analyst-sidebar {
+  width: 280px;
+  height: 100vh;
+  background: #0077b6;
+  color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  font-family: "Montserrat", sans-serif;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+/* Sidebar Header */
+.analyst-sidebar-header {
+  padding: 30px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: left;
+}
+
+.analyst-logo {
+  font-size: 24px;
+  font-weight: lighter;
+  margin: 0;
+  text-align: center;
+  color: white;
+  font-family: "Montserrat", sans-serif;
+}
+
+.analyst-logo-link {
+  text-decoration: none;
+}
+
+.analyst-tagline {
+  font-size: 14px;
+  text-align: center;
+  margin: 5px 0 0 0;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Navigation Styles */
+.analyst-sidebar-nav {
+  padding: 20px 0;
+}
+
+.analyst-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.analyst-nav-item {
+  margin-bottom: 5px;
+}
+
+.analyst-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.analyst-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-left-color: rgba(255, 255, 255, 0.5);
+}
+
+.analyst-nav-item.analyst-nav-active .analyst-nav-link {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-left-color: white;
+}
+
+.analyst-nav-icon {
+  margin-right: 12px;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.analyst-nav-text {
+  font-size: 16px;
+  font-weight: 500;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Mobile Menu Button */
+.analyst-mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: #0077b6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  z-index: 1001;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.analyst-mobile-menu-btn:hover {
+  background: #005a8d;
+}
+
+/* Mobile Overlay */
+.analyst-mobile-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Scrollbar Styling */
+.analyst-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.analyst-sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.analyst-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.analyst-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+  .analyst-sidebar {
+    width: 260px;
+  }
+
+  .analyst-sidebar-header {
+    padding: 25px 18px;
+  }
+
+  .analyst-nav-link {
+    padding: 14px 18px;
+  }
+
+  .analyst-nav-text {
+    font-size: 15px;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .analyst-mobile-menu-btn {
+    display: block;
+  }
+
+  .analyst-mobile-overlay {
+    display: block;
+  }
+
+  .analyst-sidebar {
+    transform: translateX(-100%);
+    width: 280px;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .analyst-sidebar.analyst-sidebar-open {
+    transform: translateX(0);
+  }
+
+  .analyst-sidebar-header {
+    padding: 25px 20px;
+    padding-top: 80px;
+  }
+
+  .analyst-logo {
+    font-size: 22px;
+  }
+
+  .analyst-tagline {
+    font-size: 13px;
+  }
+
+  .analyst-nav-text {
+    font-size: 15px;
+  }
+}
+
+/* Small Mobile Responsive */
+@media (max-width: 480px) {
+  .analyst-sidebar {
+    width: 260px;
+  }
+
+  .analyst-sidebar-header {
+    padding: 20px 15px;
+    padding-top: 80px;
+  }
+
+  .analyst-logo {
+    font-size: 20px;
+  }
+
+  .analyst-tagline {
+    font-size: 12px;
+  }
+
+  .analyst-nav-link {
+    padding: 12px 15px;
+  }
+
+  .analyst-nav-text {
+    font-size: 14px;
+  }
+
+  .analyst-nav-icon {
+    margin-right: 10px;
+    width: 18px;
+  }
+
+  .analyst-mobile-menu-btn {
+    top: 15px;
+    left: 15px;
+    padding: 10px;
+  }
+}
+
+/* Very Small Mobile */
+@media (max-width: 360px) {
+  .analyst-sidebar {
+    width: 240px;
+  }
+
+  .analyst-sidebar-header {
+    padding: 15px 12px;
+    padding-top: 75px;
+  }
+
+  .analyst-nav-link {
+    padding: 10px 12px;
+  }
+}

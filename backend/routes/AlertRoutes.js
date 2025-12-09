@@ -9,6 +9,7 @@ const {
   toggleAlertStatus,
 } = require("../controllers/AlertController");
 const auth = require("../middlewares/auth");
+
 router.get("/", auth(["admin"]), getAllAlerts);
 
 router.get("/:id", auth(["admin"]), getAlert);
